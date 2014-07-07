@@ -39,7 +39,10 @@ def generate_source_list(package, category, basedir="./"):
     The category parameter can be "source", "tests", etc.
     """
 
-    sources = set([os.path.join(basedir, i) for i in package[category]])
+    if category in package:
+        sources = set([os.path.join(basedir, i) for i in package[category]])
+    else:
+        sources = set()
 
     if "depends" not in package:
         return sources
