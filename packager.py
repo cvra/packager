@@ -1,6 +1,4 @@
 import yaml
-import logging
-import sys
 import os.path
 from subprocess import call
 import jinja2
@@ -65,7 +63,6 @@ def generate_source_dict(package):
 
 
 if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.INFO)
     package = yaml.load(open("pid.yml").read())
     download_dependencies(package)
     context = generate_source_dict(package)
