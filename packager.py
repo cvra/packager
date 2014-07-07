@@ -66,7 +66,11 @@ if __name__ == "__main__":
     download_dependencies(package)
     context = generate_source_dict(package)
 
-    template = jinja2.Template(open("CMakeLists.txt.jinja").read())
+    template_path = os.path.join(os.path.dirname(__file__), "CMakeLists.txt.jinja")
+    template = jinja2.Template(open(template_path).read())
 
-    print(template.render(context))
+    rendered_cmake = template.render(context)
+
+    with open("CMakeLists.txt", "w") as f:
+        f.write(rendered_cmake)
 
