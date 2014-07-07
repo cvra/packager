@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 2.6)
+
+project(cvra-build)
+set(CMAKE_BUILD_TYPE Debug)
+
+add_executable(
+    tests
+    {% for file in sources %}
+    {{ file }}
+    {% endfor %}
+
+    {% for file in tests %}
+    {{ file }}
+    {% endfor %}
+    )
+
+
+target_link_libraries(
+    tests
+    m
+    CppUTest
+    CppUTestExt
+    )

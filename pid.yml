@@ -1,0 +1,11 @@
+depends:
+    - platform-abstraction
+    - state-machine
+
+source:
+    - pid.c
+
+tests:
+    - tests/pid_test.cpp
+
+test-runner: # tests/main.cpp
