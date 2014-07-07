@@ -70,6 +70,8 @@ if __name__ == "__main__":
     download_dependencies(package)
     context = generate_source_dict(package)
 
+    context["DEPENDENCIES_DIR"] = DEPENDENCIES_DIR
+
     template_path = os.path.join(os.path.dirname(__file__), "CMakeLists.txt.jinja")
     template = jinja2.Template(open(template_path).read())
 

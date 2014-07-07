@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.6)
 project(cvra-build)
 set(CMAKE_BUILD_TYPE Debug)
 
+include_directories({{ DEPENDENCIES_DIR }})
+
 add_executable(
     tests
     {% for file in sources %}
