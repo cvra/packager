@@ -12,6 +12,8 @@ add_executable(
     {% for file in tests %}
     {{ file }}
     {% endfor %}
+
+    {{ test_runner }}
     )
 
 
