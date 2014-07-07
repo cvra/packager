@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import yaml
 import os.path
 from subprocess import call
@@ -12,7 +13,7 @@ def pkgfile_for_package(package):
     return os.path.join(DEPENDENCIES_DIR, package, "package.yml")
 
 def download_dependencies(package):
-    """ Dowload all dependencies for a given package. """
+    """ Download all dependencies for a given package. """
 
     # Skip everything if we dont have deps
     if "depends" not in package:
