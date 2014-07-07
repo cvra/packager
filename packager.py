@@ -4,13 +4,12 @@ from subprocess import call
 import jinja2
 
 
-PACKAGE_REPOSITORY = "https://github.com/cvra/{package}"
+PACKAGE_REPOSITORY = "https://github.com/antoinealb/{package}"
 BUILD_DIR = "build/"
 DEPENDENCIES_DIR = "dependencies/"
 
 def pkgfile_for_package(package):
-    # pkgfile = os.path.join(repo_path, "package.yml")
-    return package + ".yml"
+    return os.path.join(DEPENDENCIES_DIR, package, "package.yml")
 
 def download_dependencies(package):
     """ Dowload all dependencies for a given package. """
@@ -63,7 +62,7 @@ def generate_source_dict(package):
 
 
 if __name__ == "__main__":
-    package = yaml.load(open("pid.yml").read())
+    package = yaml.load(open("package.yml").read())
     download_dependencies(package)
     context = generate_source_dict(package)
 
