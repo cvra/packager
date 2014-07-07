@@ -12,9 +12,10 @@ Put the following into a file called `main.cpp` :
 ```cpp
 #include <iostream>
 
-void main(void)
+int main(void)
 {
     std::cout << "Hello, world!" << std::endl;
+    return 0;
 }
 ```
 
@@ -45,16 +46,13 @@ Here is a complete example showing the features of the format :
 
 ```yaml
 depends:
-    - platform-abstraction
-    - state-machine
+    - test-runner # needed to generate a valid "tests" exe
 
 source:
     - pid.c
 
 tests:
     - tests/pid_test.cpp
-
-test-runner: tests/main.cpp
 ```
 
 Some explanation :
