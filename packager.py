@@ -60,7 +60,6 @@ def generate_source_dict(package):
 
     result["sources"] = list(generate_source_list(package, category="source"))
     result["tests"] = list(generate_source_list(package, category="tests"))
-    result["test_runner"] = package["test-runner"]
 
     return result
 
