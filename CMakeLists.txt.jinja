@@ -7,7 +7,7 @@ include_directories({{ DEPENDENCIES_DIR }})
 
 add_executable(
     tests
-    {% for file in sources %}
+    {% for file in source %}
     {{ file }}
     {% endfor %}
 

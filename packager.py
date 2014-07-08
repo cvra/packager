@@ -58,7 +58,7 @@ def generate_source_list(package, category, basedir="./"):
 def generate_source_dict(package):
     result = dict()
 
-    result["sources"] = list(generate_source_list(package, category="source"))
+    result["source"] = list(generate_source_list(package, category="source"))
     result["tests"] = list(generate_source_list(package, category="tests"))
 
     return result
