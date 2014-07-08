@@ -64,18 +64,23 @@ def generate_source_dict(package):
     return result
 
 
+def render_template_to_file(template_name, dest_path, context):
+    template_path = os.path.join(os.path.dirname(__file__), template_name)
+    template = jinja2.Template(open(template_path).read())
+    rendered = template.render(context)
+
+    with open(dest_path, "w") as f:
+        f.write(rendered)
+
+
+
 if __name__ == "__main__":
     package = yaml.load(open("package.yml").read())
     download_dependencies(package)
     context = generate_source_dict(package)
-
     context["DEPENDENCIES_DIR"] = DEPENDENCIES_DIR
 
-    template_path = os.path.join(os.path.dirname(__file__), "CMakeLists.txt.jinja")
-    template = jinja2.Template(open(template_path).read())
+    if context["tests"]:
+        render_template_to_file("CMakeLists.txt.jinja", "CMakeLists.txt", context)
 
-    rendered_cmake = template.render(context)
-
-    with open("CMakeLists.txt", "w") as f:
-        f.write(rendered_cmake)
 
