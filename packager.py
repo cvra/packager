@@ -63,10 +63,15 @@ def generate_source_dict(package):
 
     return result
 
+def create_jinja_env():
+    template_dir = os.path.dirname(__file__)
+    loader = jinja2.FileSystemLoader(template_dir)
+    return jinja2.Environment(loader=loader)
+
 
 def render_template_to_file(template_name, dest_path, context):
-    template_path = os.path.join(os.path.dirname(__file__), template_name)
-    template = jinja2.Template(open(template_path).read())
+    env = create_jinja_env()
+    template = env.get_template(template_name)
     rendered = template.render(context)
 
     with open(dest_path, "w") as f:
