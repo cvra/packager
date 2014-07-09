@@ -64,7 +64,9 @@ def generate_source_dict(package):
     return result
 
 def create_jinja_env():
-    template_dir = os.path.dirname(__file__)
+    template_dir = list()
+    template_dir.append(os.getcwd())
+    template_dir.append(os.path.dirname(__file__))
     loader = jinja2.FileSystemLoader(template_dir)
     return jinja2.Environment(loader=loader)
 
@@ -84,6 +86,10 @@ if __name__ == "__main__":
     download_dependencies(package)
     context = generate_source_dict(package)
     context["DEPENDENCIES_DIR"] = DEPENDENCIES_DIR
+
+    if "templates" in package:
+        for template, dest in package["templates"].items():
+            render_template_to_file(template, dest, context)
 
     if context["tests"]:
         render_template_to_file("CMakeLists.txt.jinja", "CMakeLists.txt", context)
