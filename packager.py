@@ -84,9 +84,7 @@ def render_template_to_file(template_name, dest_path, context):
     with open(dest_path, "w") as f:
         f.write(rendered)
 
-
-
-if __name__ == "__main__":
+def main():
     package = yaml.load(open("package.yml").read())
     download_dependencies(package)
     context = generate_source_dict(package)
@@ -100,3 +98,6 @@ if __name__ == "__main__":
         render_template_to_file("CMakeLists.txt.jinja", "CMakeLists.txt", context)
 
 
+
+if __name__ == "__main__":
+    main()
