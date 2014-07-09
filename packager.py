@@ -58,8 +58,13 @@ def generate_source_list(package, category, basedir="./"):
 def generate_source_dict(package):
     result = dict()
 
-    result["source"] = list(generate_source_list(package, category="source"))
-    result["tests"] = list(generate_source_list(package, category="tests"))
+    for cat in ["source", "tests"]:
+        result[cat] = list(generate_source_list(package, category=cat))
+
+    result["target"] = dict()
+
+    for arch in ["x86", "arm"]:
+        result["target"][arch] = list(generate_source_list(package, category="target."+arch))
 
     return result
 
