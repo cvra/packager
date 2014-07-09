@@ -5,7 +5,7 @@ from subprocess import call
 import jinja2
 
 
-PACKAGE_REPOSITORY = "https://github.com/antoinealb/{package}"
+PACKAGE_REPOSITORY = "https://github.com/cvra/{package}"
 BUILD_DIR = "build/"
 DEPENDENCIES_DIR = "dependencies/"
 
