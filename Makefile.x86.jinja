@@ -1,0 +1,9 @@
+{% extends "Makefile.base.jinja" %}
+
+{% block app_src %}
+
+{% for file in target.x86 %}
+CSRC += {{ file }}
+{% endfor %}
+
+{% endblock %}
