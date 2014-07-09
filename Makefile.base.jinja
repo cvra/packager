@@ -24,7 +24,6 @@ OBJS = $(CSRC:.c=.o)
 {% block linking %}
 all: app
 app: $(OBJS)
-    @echo "Linking..."
 	$(LD) $(OBJS) -o app
 {% endblock %}
 
