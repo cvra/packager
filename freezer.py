@@ -9,6 +9,11 @@ from contextlib import contextmanager
 
 @contextmanager
 def cd(path):
+    """
+    Changes current directory to path then gets back to previous directory
+    on exit.
+    Similar to pushd/popd commands.
+    """
     old_dir = os.getcwd()
     os.chdir(path)
     try:
@@ -18,15 +23,17 @@ def cd(path):
 
 
 def dump_dict(to_dump):
+    """ Serializes a dictionary into a string. Currently uses JSON. """
     return json.dumps(to_dump, indent=2)
 
 def load_dict(string):
-    return json.loads(to_dump)
+    """ Loads a dictionary from its serialized version. """
+    return json.loads(string)
 
 DEPENDENCIES_DIR = "dependencies/"
 
 def load_versions_from_file(path):
-    pass
+    print("Not implemented yet!")
 
 def dump_versions_to_file(path):
     versions = dict()
@@ -34,15 +41,15 @@ def dump_versions_to_file(path):
     if not os.path.exists(DEPENDENCIES_DIR):
         return
 
-    for dir in os.listdir(DEPENDENCIES_DIR):
-        with cd(os.path.join(DEPENDENCIES_DIR, dir)):
+    for directory in os.listdir(DEPENDENCIES_DIR):
+        with cd(os.path.join(DEPENDENCIES_DIR, directory)):
             git_sha = subprocess.check_output("git rev-parse HEAD".split())
             git_sha = git_sha.decode("ascii") # converts to str
             git_sha = git_sha.rstrip() # removes trailing newline
-            versions[dir] = git_sha
+            versions[directory] = git_sha
 
-    with open(path, "w") as f:
-        f.write(dump_dict(versions))
+    with open(path, "w") as output:
+        output.write(dump_dict(versions))
 
 
 def create_argument_parser():
@@ -50,8 +57,8 @@ def create_argument_parser():
     descr = "Dumps the dependencies versions into a JSON file or loads them."
     parser = argparse.ArgumentParser(description=descr)
     parser.add_argument("-f", "--file",
-            default="versions.json",
-            help="Path to versions file (default: versions.json)")
+                        default="versions.json",
+                        help="Path to versions file (default: versions.json)")
     parser.add_argument("-l", "--load",
                         dest="action", action="store_const",
                         const=load_versions_from_file,
@@ -60,11 +67,9 @@ def create_argument_parser():
 
     return parser
 
-if __name__ == "__main__":
+def main():
     args = create_argument_parser().parse_args()
-
     args.action(args.file)
 
-
-
-
+if __name__ == "__main__":
+    main()
