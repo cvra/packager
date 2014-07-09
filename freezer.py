@@ -2,7 +2,13 @@
 
 import os.path
 import subprocess
-import yaml
+import json
+
+def dump_dict(to_dump):
+    return json.dumps(to_dump, indent=2)
+
+def load_dict(string):
+    return json.loads(to_dump)
 
 DEPENDENCIES_DIR = "dependencies/"
 
@@ -19,7 +25,7 @@ if __name__ == "__main__":
             versions[dir] = git_sha
 
     # default_flow_style is False to put in block mode
-    print(yaml.dump(versions, default_flow_style=False))
+    print(dict_dump(versions))
 
 
 
