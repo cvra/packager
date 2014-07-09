@@ -33,7 +33,18 @@ def load_dict(string):
 DEPENDENCIES_DIR = "dependencies/"
 
 def load_versions_from_file(path):
-    print("Not implemented yet!")
+    with open(path) as f:
+        versions = load_dict(f.read())
+
+    for directory, version in versions.items():
+        dependency_path = os.path.join(DEPENDENCIES_DIR, directory)
+
+        if os.path.exists(dependency_path):
+            print("Checking out {0} at {1}".format(directory, version))
+            with cd(dependency_path):
+                git_cmd = "git checkout -f {0}".format(version)
+                subprocess.call(git_cmd.split())
+
 
 def dump_versions_to_file(path):
     versions = dict()
