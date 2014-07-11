@@ -46,6 +46,7 @@ Here is a complete example showing the features of the format :
 
 ```yaml
 depends:
+    - example-module # Will clone from cvra/example-module
     - test-runner: # needed to generate a valid "tests" exe
         fork: antoinealb # will pull from antoinealb/test-runner instead of cvra/test-runner
     - ucos3:
