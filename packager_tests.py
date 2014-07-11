@@ -41,10 +41,19 @@ class PackageNameTest(unittest.TestCase):
         package = {"pid":{"fork":"antoinealb"}}
         self.assertEqual("pid", package_name_from_desc(package))
 
+    def test_pkgfile_trivial_case(self):
+        """ Checks that we can correctly generate the package file path. """
+        package = "pid"
+        expected = "dependencies/pid/package.yml"
+        self.assertEqual(expected, pkgfile_for_package(package))
 
-
-
-
+    def test_pkgfile_complex_case(self):
+        """
+        Checks that we can correctly find the package.yml file for complex packages.
+        """
+        package = {"pid":{"fork":"antoinealb"}}
+        expected = "dependencies/pid/package.yml"
+        self.assertEqual(expected, pkgfile_for_package(package))
 
 
 

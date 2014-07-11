@@ -45,11 +45,12 @@ def package_name_from_desc(package):
 
     return list(package.keys())[0]
 
-
-
-
 def pkgfile_for_package(package):
-    return os.path.join(DEPENDENCIES_DIR, package, "package.yml")
+    """
+    Returns the path to the package.yml file for the given package description.
+    """
+    pkgname = package_name_from_desc(package)
+    return os.path.join(DEPENDENCIES_DIR, pkgname, "package.yml")
 
 def download_dependencies(package):
     """ Download all dependencies for a given package. """
