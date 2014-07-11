@@ -36,6 +36,14 @@ def url_for_package(package):
 
     raise ValueError("Package must be either a string or contain a fork or URL.")
 
+def path_for_package(package):
+    """
+    Returns the path to the downloaded package directory for given package description.
+    """
+    package = package_name_from_desc(package)
+    return os.path.join(DEPENDENCIES_DIR, package)
+
+
 def package_name_from_desc(package):
     """
     Returns the package name from a description, either simple or dictionnary.
@@ -49,8 +57,7 @@ def pkgfile_for_package(package):
     """
     Returns the path to the package.yml file for the given package description.
     """
-    pkgname = package_name_from_desc(package)
-    return os.path.join(DEPENDENCIES_DIR, pkgname, "package.yml")
+    return os.path.join(path_for_package(package), "package.yml")
 
 def download_dependencies(package):
     """ Download all dependencies for a given package. """
@@ -61,7 +68,7 @@ def download_dependencies(package):
 
     for dep in package["depends"]:
         repo_url = url_for_package(dep)
-        repo_path = os.path.join(DEPENDENCIES_DIR, package_name_from_desc(dep))
+        repo_path = path_for_package(dep)
 
         if not os.path.exists(repo_path):
             call("git clone {url} {path}".format(url=repo_url, path=repo_path).split())

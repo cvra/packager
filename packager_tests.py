@@ -55,6 +55,19 @@ class PackageNameTest(unittest.TestCase):
         expected = "dependencies/pid/package.yml"
         self.assertEqual(expected, pkgfile_for_package(package))
 
+    def test_path_for_package_simple_case(self):
+        """
+        Checks that we can find the path to a package directory (trivial case).
+        """
+        package = "pid"
+        expected = "dependencies/pid"
+        self.assertEqual(expected, path_for_package(package))
+
+    def test_path_for_package_complex_case(self):
+        """ Checks package path for complex description. """
+        package = {"pid":{"fork":"antoinealb"}}
+        self.assertEqual("dependencies/pid", path_for_package(package))
+
 
 
 
