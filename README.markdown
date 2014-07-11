@@ -46,7 +46,10 @@ Here is a complete example showing the features of the format :
 
 ```yaml
 depends:
-    - test-runner # needed to generate a valid "tests" exe
+    - test-runner: # needed to generate a valid "tests" exe
+        fork: antoinealb # will pull from antoinealb/test-runner instead of cvra/test-runner
+    - ucos3:
+        url: "https://awesomegit.com/ucos3"
 
 source:
     - pid.c
