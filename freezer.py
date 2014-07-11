@@ -7,6 +7,8 @@ import argparse
 
 from contextlib import contextmanager
 
+from packager import DEPENDENCIES_DIR, path_for_package
+
 @contextmanager
 def cd(path):
     """
@@ -30,14 +32,12 @@ def load_dict(string):
     """ Loads a dictionary from its serialized version. """
     return json.loads(string)
 
-DEPENDENCIES_DIR = "dependencies/"
-
 def load_versions_from_file(path):
     with open(path) as f:
         versions = load_dict(f.read())
 
     for directory, version in versions.items():
-        dependency_path = os.path.join(DEPENDENCIES_DIR, directory)
+        dependency_path = path_for_package(directory)
 
         if os.path.exists(dependency_path):
             print("Checking out {0} at {1}".format(directory, version))
