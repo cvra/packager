@@ -5,9 +5,36 @@ from subprocess import call
 import jinja2
 
 
-PACKAGE_REPOSITORY = "https://github.com/cvra/{package}"
 BUILD_DIR = "build/"
 DEPENDENCIES_DIR = "dependencies/"
+
+def url_for_package(package):
+    """
+    Returns the correct URL for a package description.
+    A simple description is just the name of the repository in the CVRA organization.
+    Example : my_package = "pid"
+
+    A complex repository is a dict with the only key as package name and a
+    config (dict too) as value.
+    Example : my_package = {"pid":{"fork":"antoinealb"}}
+    """
+
+    PACKAGE_REPOSITORY = "https://github.com/{fork}/{package}"
+
+    if isinstance(package, str):
+        return PACKAGE_REPOSITORY.format(fork="cvra", package=package)
+
+    pkgname = package_name_from_desc(package)
+    pkgdescr = package[pkgname]
+
+    if "url" in pkgdescr:
+        return pkgdescr["url"]
+
+    if "fork" in pkgdescr:
+        fork = pkgdescr["fork"]
+        return PACKAGE_REPOSITORY.format(fork=fork, package=pkgname)
+
+    raise ValueError("Package must be either a string or contain a fork or URL.")
 
 def pkgfile_for_package(package):
     return os.path.join(DEPENDENCIES_DIR, package, "package.yml")
