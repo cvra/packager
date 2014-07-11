@@ -94,7 +94,7 @@ def generate_source_list(package, category, basedir="./"):
         return sources
 
     for dep in package["depends"]:
-        pkg_dir = os.path.join(DEPENDENCIES_DIR, dep)
+        pkg_dir = path_for_package(dep)
         pkgfile = pkgfile_for_package(dep)
         dep = yaml.load(open(pkgfile).read())
         sources = sources.union(generate_source_list(dep, category, pkg_dir))
