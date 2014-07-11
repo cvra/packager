@@ -36,6 +36,18 @@ def url_for_package(package):
 
     raise ValueError("Package must be either a string or contain a fork or URL.")
 
+def package_name_from_desc(package):
+    """
+    Returns the package name from a description, either simple or dictionnary.
+    """
+    if isinstance(package, str):
+        return package
+
+    return list(package.keys())[0]
+
+
+
+
 def pkgfile_for_package(package):
     return os.path.join(DEPENDENCIES_DIR, package, "package.yml")
 
@@ -47,11 +59,10 @@ def download_dependencies(package):
         return
 
     for dep in package["depends"]:
-        repo_url = PACKAGE_REPOSITORY.format(package=dep)
-        repo_path = os.path.join(DEPENDENCIES_DIR, dep)
+        repo_url = url_for_package(dep)
+        repo_path = os.path.join(DEPENDENCIES_DIR, package_name_from_desc(dep))
 
         if not os.path.exists(repo_path):
-            print("Cloning cvra/{0}...".format(dep))
             call("git clone {url} {path}".format(url=repo_url, path=repo_path).split())
 
         pkgfile = pkgfile_for_package(dep)

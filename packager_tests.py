@@ -29,6 +29,17 @@ class RepoUrlTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             url_for_package(package)
 
+class PackageNameTest(unittest.TestCase):
+    def test_pkgname_trivial_case(self):
+        """ Checks that the package name is extracted correctly from a trivial
+        description (just a string). """
+        package = "pid"
+        self.assertEqual(package, package_name_from_desc(package))
+
+    def test_pkgname_complex_description_works(self):
+        """ Are complex description handled correctly too ? """
+        package = {"pid":{"fork":"antoinealb"}}
+        self.assertEqual("pid", package_name_from_desc(package))
 
 
 
