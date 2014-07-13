@@ -6,4 +6,5 @@ install:
     - sudo pip install pyyaml jinja2
 
 script:
+    - python --version
     - python ./packager_tests.py
