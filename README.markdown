@@ -1,4 +1,5 @@
 # CVRA Packager proposal
+[![Build Status](https://travis-ci.org/cvra/packager.png)](https://travis-ci.org/cvra/packager)
 
 This is a proposal for a simpler modules (named packages here).
 It only implements the minimal amount of feature needed to get the work done :
