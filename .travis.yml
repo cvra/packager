@@ -3,7 +3,7 @@ python:
     - "2.7"
 
 install: 
-    - sudo pip install pyaml jinja2
+    - sudo pip install pyyaml jinja2
 
 script:
     - python ./packager_tests.py
