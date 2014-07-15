@@ -7,6 +7,10 @@ LD=@gcc
 CFLAGS = -Wall
 {% endblock %}
 
+{% block ldflags %}
+LDFLAGS =
+{% endblock %}
+
 CFLAGS += -I {{DEPENDENCIES_DIR}}
 
 # C source files
@@ -24,7 +28,7 @@ OBJS = $(CSRC:.c=.o)
 {% block linking %}
 all: app
 app: $(OBJS)
-	$(LD) $(OBJS) -o app
+	$(LD) $(LDFLAGS) $(OBJS) -o app
 {% endblock %}
 
 {% block c_compile %}
