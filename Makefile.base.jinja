@@ -1,3 +1,7 @@
+{% block variables %}
+Q=@
+{% endblock %}
+
 {% block toolchain %}
 CC=@gcc
 LD=@gcc
@@ -28,14 +32,14 @@ OBJS = $(CSRC:.c=.o)
 {% block linking %}
 all: app
 app: $(OBJS)
-	$(LD) $(LDFLAGS) $(OBJS) -o app
+	$(Q) $(LD) $(LDFLAGS) $(OBJS) -o app
 {% endblock %}
 
 {% block c_compile %}
 %.o: %.c
 	@echo
 	@echo Compiling $<...
-	$(CC) -c $(CFLAGS) ${<} -o ${@}
+	$(Q) $(CC) -c $(CFLAGS) ${<} -o ${@}
 {% endblock %}
 
 {% block clean %}
