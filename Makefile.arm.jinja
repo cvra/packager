@@ -1,0 +1,17 @@
+{% extends "Makefile.base.jinja" %}
+
+{% block toolchain %}
+CC = arm-none-eabi-gcc
+LD = arm-none-eabi-gcc
+AR = arm-none-eabi-ar
+OC = arm-none-eabi-objcopy
+OD = arm-none-eabi-objdump
+NM = arm-none-eabi-nm
+SZ = arm-none-eabi-size
+{% endblock %}
+
+{% block app_src %}
+{% for file in target.arm %}
+CSRC += {{ file }}
+{% endfor %}
+{% endblock %}
