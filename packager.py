@@ -53,6 +53,13 @@ def package_name_from_desc(package):
 
     return list(package.keys())[0]
 
+def clone(url, dest):
+    """
+    Git clones the given URL to the given destination path.
+    """
+    command = "git clone {url} {path}".format(url=url, path=dest)
+    call(command.split())
+
 def pkgfile_for_package(package):
     """
     Returns the path to the package.yml file for the given package description.
@@ -71,7 +78,7 @@ def download_dependencies(package):
         repo_path = path_for_package(dep)
 
         if not os.path.exists(repo_path):
-            call("git clone {url} {path}".format(url=repo_url, path=repo_path).split())
+            clone(repo_url, repo_path)
 
         pkgfile = pkgfile_for_package(dep)
         dep = yaml.load(open(pkgfile).read())

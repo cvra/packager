@@ -2,6 +2,8 @@
 import unittest
 from packager import *
 
+from unittest.mock import *
+
 class RepoUrlTest(unittest.TestCase):
     def test_simple_repository(self):
         "Checks that a simple repository URL is handled correctly."
@@ -69,7 +71,18 @@ class PackageNameTest(unittest.TestCase):
         self.assertEqual("dependencies/pid", path_for_package(package))
 
 
+class DependencyTestCase(unittest.TestCase):
 
+    @patch("packager.clone")
+    def test_no_depencendy_no_clone(self, clone_mock):
+        """
+        Checks that a package without dependencies will not create any git clone.
+        """
+        package = {} # no dependencies
+        with patch("os.path.exists", Mock(return_value=False)):
+            download_dependencies(package)
+
+        self.assertEqual([], clone_mock.call_args_list)
 
 
 if __name__ == "__main__":
