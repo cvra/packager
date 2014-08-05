@@ -133,8 +133,6 @@ class DependencyTestCase(unittest.TestCase):
         package = {"depends":['pid']}
         download_dependencies(package)
 
-        print(clone.call_args_list)
-
         clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
         clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
 
