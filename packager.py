@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import yaml
 import os.path
-from subprocess import call
+import subprocess
 import jinja2
 
 
@@ -58,7 +58,7 @@ def clone(url, dest):
     Git clones the given URL to the given destination path.
     """
     command = "git clone {url} {path}".format(url=url, path=dest)
-    call(command.split())
+    subprocess.call(command.split())
 
 def pkgfile_for_package(package):
     """

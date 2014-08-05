@@ -155,6 +155,14 @@ class DependencyTestCase(unittest.TestCase):
         clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
         clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
 
+class GitCloneTestCase(unittest.TestCase):
+    @patch('subprocess.call')
+    def test_arguments_are_passed_correctly(self, call):
+        url = 'https://github.com/cvra/pid'
+        dest = 'dependencies/pid'
+        expected = 'git clone https://github.com/cvra/pid dependencies/pid'.split()
+        clone(url, dest)
+        call.assert_called_with(expected)
 
 
 
