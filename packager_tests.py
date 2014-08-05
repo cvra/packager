@@ -216,8 +216,17 @@ class GenerateSourceListTestCase(unittest.TestCase):
         expected = set(['./application.c', 'dependencies/pid/pid.c'])
         self.assertEqual(expected, result)
 
-
-
+    def test_source_dict_contains_correct_categories(self):
+        """
+        Tests that the source dictionnary contains all needed categories even
+        when the package doesn't.
+        """
+        result = generate_source_dict({})
+        self.assertIn('source', result)
+        self.assertIn('tests', result)
+        self.assertIn('target', result)
+        self.assertIn('x86', result['target'])
+        self.assertIn('arm', result['target'])
 
 if __name__ == "__main__":
     unittest.main()
