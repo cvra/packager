@@ -183,25 +183,6 @@ class OpenPackageTestCase(unittest.TestCase):
         expected = {"source":['pid.c', 'pidconfig.c']}
         self.assertEqual(expected, package)
 
-    def test_load_complex_package(self):
-        """
-        Tests that opening a package using its complex (dict) description works
-        """
-
-        package_content = """
-        source:
-            - pid.c
-            - pidconfig.c
-        """
-
-        package = {'pid':{'fork':'antoinealb'}}
-
-        with patch('packager.open', mock_open(read_data=package_content), create=True):
-            package = open_package(package)
-
-        expected = {'source':['pid.c', 'pidconfig.c']}
-        self.assertEqual(expected, package)
-
 
 
 
