@@ -66,6 +66,10 @@ def pkgfile_for_package(package):
     """
     return os.path.join(path_for_package(package), "package.yml")
 
+def open_package(package):
+    pkgfile = pkgfile_for_package(package)
+    return yaml.load(open(pkgfile).read())
+
 def download_dependencies(package):
     """ Download all dependencies for a given package. """
 
@@ -80,9 +84,7 @@ def download_dependencies(package):
         if not os.path.exists(repo_path):
             clone(repo_url, repo_path)
 
-        pkgfile = pkgfile_for_package(dep)
-        dep = yaml.load(open(pkgfile).read())
-        download_dependencies(dep)
+        download_dependencies(open_package(dep))
 
 def generate_source_list(package, category, basedir="./"):
     """
@@ -102,9 +104,7 @@ def generate_source_list(package, category, basedir="./"):
 
     for dep in package["depends"]:
         pkg_dir = path_for_package(dep)
-        pkgfile = pkgfile_for_package(dep)
-        dep = yaml.load(open(pkgfile).read())
-        sources = sources.union(generate_source_list(dep, category, pkg_dir))
+        sources = sources.union(generate_source_list(open_package(dep), category, pkg_dir))
 
     return sources
 
@@ -149,8 +149,6 @@ def main():
 
     if context["tests"]:
         render_template_to_file("CMakeLists.txt.jinja", "CMakeLists.txt", context)
-
-
 
 if __name__ == "__main__":
     main()

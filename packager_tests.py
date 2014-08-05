@@ -84,6 +84,62 @@ class DependencyTestCase(unittest.TestCase):
 
         self.assertEqual([], clone_mock.call_args_list)
 
+    @patch('os.path.exists')
+    @patch('packager.open_package')
+    @patch("packager.clone")
+    def test_dependency_already_there(self, clone, open_package, exists):
+        """
+        Checks that if a package is already downloaded we don't download it
+        again.
+        """
+        open_package.return_value = {}
+        exists.return_value = True
+
+        package = {"depends":["pid"]}
+        download_dependencies(package)
+
+        self.assertEqual([], clone.call_args_list)
+
+    @patch('os.path.exists')
+    @patch('packager.open_package')
+    @patch('packager.clone')
+    def test_dependency_download_single_level(self, clone, open_package, exists):
+        """
+        Checks that we correctly download a needed dependency.
+        """
+        open_package.return_value = {}
+        exists.return_value = False # not yet downloaded
+
+        package = {"depends":["pid"]}
+        download_dependencies(package)
+
+        clone.assert_called_with('https://github.com/cvra/pid', 'dependencies/pid')
+
+    @patch('os.path.exists')
+    @patch('packager.open_package')
+    @patch('packager.clone')
+    def test_dependency_has_a_dependency_itself(self, clone, open_package, exists):
+        """
+        Checks that if a dependency of the package has itself a dependency it
+        will be cloned too.
+        """
+        exists.return_value = False # we did not download anything yet
+
+        # simulates loading a package with dependency
+        pid_package = {'depends':['test-runner']}
+        testrunner_package = {}
+        open_package.side_effect = [pid_package, testrunner_package]
+
+        package = {"depends":['pid']}
+        download_dependencies(package)
+
+        print(clone.call_args_list)
+
+        clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
+        clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
+
+
+
 
 if __name__ == "__main__":
     unittest.main()
