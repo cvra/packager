@@ -183,6 +183,38 @@ class OpenPackageTestCase(unittest.TestCase):
         expected = {"source":['pid.c', 'pidconfig.c']}
         self.assertEqual(expected, package)
 
+class GenerateSourceListTestCase(unittest.TestCase):
+    def test_source_empty_package(self):
+        """
+        Tests that asking for a category not in the package returns an empty
+        set.
+        """
+        package = {}
+        result = generate_source_list(package, 'sources')
+        self.assertEqual(set(), result)
+
+    def test_source_package_no_dep(self):
+        """
+        Tests getting the sources from a package with no dependencies.
+        """
+        package = {'sources':['pid.c']}
+        result = generate_source_list(package, 'sources')
+        self.assertEqual(set(['./pid.c']), result)
+
+    @patch('packager.open_package')
+    def test_source_package_dep(self, open_package_mock):
+        """
+        Tests that dependencies sources are included in the result.
+        """
+
+        package = {'sources':['application.c'],'depends':['pid']}
+        pid_package = {'sources':['pid.c']}
+        open_package_mock.return_value = pid_package
+
+        result = generate_source_list(package, 'sources')
+
+        expected = set(['./application.c', 'dependencies/pid/pid.c'])
+        self.assertEqual(expected, result)
 
 
 
