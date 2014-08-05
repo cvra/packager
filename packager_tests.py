@@ -83,8 +83,7 @@ class DependencyTestCase(unittest.TestCase):
         Checks that a package without dependencies will not create any git clone.
         """
         package = {} # no dependencies
-        with patch("os.path.exists", Mock(return_value=False)):
-            download_dependencies(package)
+        download_dependencies(package)
 
         self.assertEqual([], clone_mock.call_args_list)
 
