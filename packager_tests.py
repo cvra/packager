@@ -228,6 +228,31 @@ class GenerateSourceListTestCase(unittest.TestCase):
         self.assertIn('x86', result['target'])
         self.assertIn('arm', result['target'])
 
+class TemplateRenderingTestCase(unittest.TestCase):
+
+    @patch('packager.open', new_callable=mock_open, create=True)
+    @patch('packager.create_jinja_env')
+    def test_can_render_template_correctly(self, create_env_mock, open_mock):
+        """
+        Checks that we can render template to files correctly.
+        """
+        # Setups a mock Jinja2 environment factory
+        templates = {
+                'test.jinja':'{{content}}'
+                }
+        loader = jinja2.DictLoader(templates)
+        env = jinja2.Environment(loader=loader)
+        create_env_mock.return_value = env
+
+        # Dummy render context
+        context = {'content':'OLOL'}
+
+        render_template_to_file('test.jinja', 'dest', context)
+
+        # Checks that the result was written to the correct file
+        open_mock.assert_any_call('dest', 'w')
+        open_mock().write.assert_any_call('OLOL')
+
 class IntegrationTesting(unittest.TestCase):
     @patch('packager.render_template_to_file')
     def test_all_templates_are_rendered(self, render_mock):
