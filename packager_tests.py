@@ -2,7 +2,11 @@
 import unittest
 from packager import *
 
-from unittest.mock import *
+try:
+    from unittest.mock import *
+except ImportError:
+    # unittest.mock is only available in python >= 3.3
+    from mock import *
 
 class RepoUrlTest(unittest.TestCase):
     def test_simple_repository(self):
