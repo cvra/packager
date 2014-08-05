@@ -164,6 +164,46 @@ class GitCloneTestCase(unittest.TestCase):
         clone(url, dest)
         call.assert_called_with(expected)
 
+class OpenPackageTestCase(unittest.TestCase):
+    def test_load_simple_package(self):
+        """
+        Tests that loading a package given its simple description (name string)
+        works as expected.
+        """
+
+        package_content = """
+        source:
+            - pid.c
+            - pidconfig.c
+        """
+
+        with patch('packager.open', mock_open(read_data=package_content), create=True):
+            package = open_package('pid')
+
+        expected = {"source":['pid.c', 'pidconfig.c']}
+        self.assertEqual(expected, package)
+
+    def test_load_complex_package(self):
+        """
+        Tests that opening a package using its complex (dict) description works
+        """
+
+        package_content = """
+        source:
+            - pid.c
+            - pidconfig.c
+        """
+
+        package = {'pid':{'fork':'antoinealb'}}
+
+        with patch('packager.open', mock_open(read_data=package_content), create=True):
+            package = open_package(package)
+
+        expected = {'source':['pid.c', 'pidconfig.c']}
+        self.assertEqual(expected, package)
+
+
+
 
 
 if __name__ == "__main__":
