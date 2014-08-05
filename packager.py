@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import yaml
 import os.path
-from subprocess import call
+import subprocess
 import jinja2
 
 
@@ -11,7 +11,8 @@ DEPENDENCIES_DIR = "dependencies/"
 def url_for_package(package):
     """
     Returns the correct URL for a package description.
-    A simple description is just the name of the repository in the CVRA organization.
+    A simple description is just the name of the repository in the CVRA
+    organization.
     Example : my_package = "pid"
 
     A complex repository is a dict with the only key as package name and a
@@ -19,10 +20,10 @@ def url_for_package(package):
     Example : my_package = {"pid":{"fork":"antoinealb"}}
     """
 
-    PACKAGE_REPOSITORY = "https://github.com/{fork}/{package}"
+    url_template = "https://github.com/{fork}/{package}"
 
     if isinstance(package, str):
-        return PACKAGE_REPOSITORY.format(fork="cvra", package=package)
+        return url_template.format(fork="cvra", package=package)
 
     pkgname = package_name_from_desc(package)
     pkgdescr = package[pkgname]
@@ -32,13 +33,14 @@ def url_for_package(package):
 
     if "fork" in pkgdescr:
         fork = pkgdescr["fork"]
-        return PACKAGE_REPOSITORY.format(fork=fork, package=pkgname)
+        return url_template.format(fork=fork, package=pkgname)
 
     raise ValueError("Package must be either a string or contain a fork or URL.")
 
 def path_for_package(package):
     """
-    Returns the path to the downloaded package directory for given package description.
+    Returns the path to the downloaded package directory for given package
+    description.
     """
     package = package_name_from_desc(package)
     return os.path.join(DEPENDENCIES_DIR, package)
@@ -53,11 +55,25 @@ def package_name_from_desc(package):
 
     return list(package.keys())[0]
 
+def clone(url, dest):
+    """
+    Git clones the given URL to the given destination path.
+    """
+    command = "git clone {url} {path}".format(url=url, path=dest)
+    subprocess.call(command.split())
+
 def pkgfile_for_package(package):
     """
     Returns the path to the package.yml file for the given package description.
     """
     return os.path.join(path_for_package(package), "package.yml")
+
+def open_package(package):
+    """
+    Load a package given its description / name.
+    """
+    pkgfile = pkgfile_for_package(package)
+    return yaml.load(open(pkgfile).read())
 
 def download_dependencies(package):
     """ Download all dependencies for a given package. """
@@ -71,11 +87,9 @@ def download_dependencies(package):
         repo_path = path_for_package(dep)
 
         if not os.path.exists(repo_path):
-            call("git clone {url} {path}".format(url=repo_url, path=repo_path).split())
+            clone(repo_url, repo_path)
 
-        pkgfile = pkgfile_for_package(dep)
-        dep = yaml.load(open(pkgfile).read())
-        download_dependencies(dep)
+        download_dependencies(open_package(dep))
 
 def generate_source_list(package, category, basedir="./"):
     """
@@ -95,13 +109,16 @@ def generate_source_list(package, category, basedir="./"):
 
     for dep in package["depends"]:
         pkg_dir = path_for_package(dep)
-        pkgfile = pkgfile_for_package(dep)
-        dep = yaml.load(open(pkgfile).read())
-        sources = sources.union(generate_source_list(dep, category, pkg_dir))
+        dep_src = generate_source_list(open_package(dep), category, pkg_dir)
+        sources = sources.union(dep_src)
 
     return sources
 
 def generate_source_dict(package):
+    """
+    Generates a dictionary containing a list of files for each source category.
+    The result can then be used for template rendering for example.
+    """
     result = dict()
 
     for cat in ["source", "tests"]:
@@ -115,6 +132,9 @@ def generate_source_dict(package):
     return result
 
 def create_jinja_env():
+    """
+    Factory for a jinja2 environment with the correct paths for the packager.
+    """
     template_dir = list()
     template_dir.append(os.getcwd())
     template_dir.append(os.path.dirname(__file__))
@@ -123,14 +143,20 @@ def create_jinja_env():
 
 
 def render_template_to_file(template_name, dest_path, context):
+    """
+    Renders the template given by name to dest_path using the given context.
+    """
     env = create_jinja_env()
     template = env.get_template(template_name)
     rendered = template.render(context)
 
-    with open(dest_path, "w") as f:
-        f.write(rendered)
+    with open(dest_path, "w") as output:
+        output.write(rendered)
 
 def main():
+    """
+    Main function of the application.
+    """
     package = yaml.load(open("package.yml").read())
     download_dependencies(package)
     context = generate_source_dict(package)
@@ -142,8 +168,6 @@ def main():
 
     if context["tests"]:
         render_template_to_file("CMakeLists.txt.jinja", "CMakeLists.txt", context)
-
-
 
 if __name__ == "__main__":
     main()
