@@ -228,6 +228,58 @@ class GenerateSourceListTestCase(unittest.TestCase):
         self.assertIn('x86', result['target'])
         self.assertIn('arm', result['target'])
 
+class IntegrationTesting(unittest.TestCase):
+    @patch('packager.render_template_to_file')
+    def test_all_templates_are_rendered(self, render_mock):
+        """
+        Tests that all templates specified in package.yml are rendered
+        appropriately.
+        """
+
+        from packager import main as packager_main
+
+        pkgfile_content = '''
+        templates:
+            Makefile.jinja: Makefile
+            Test.jinja: Test
+        '''
+
+        with patch('packager.open', mock_open(read_data=pkgfile_content), create=True):
+            packager_main()
+
+        empty_context = {'source': [],
+                         'DEPENDENCIES_DIR': 'dependencies/',
+                         'target': {'arm': [], 'x86': []},
+                         'tests': []}
+
+        render_mock.assert_any_call('Makefile.jinja', 'Makefile', empty_context)
+        render_mock.assert_any_call('Test.jinja', 'Test', empty_context)
+
+    @patch('packager.render_template_to_file')
+    def test_unit_tests_template(self, render_mock):
+        """
+        Tests that including tests in a package triggers the rendering of a
+        CMakeLists.txt to build the unit tests.
+        """
+        from packager import main as packager_main
+
+        pkgfile_content = '''
+        tests:
+            - pid_test.cpp
+        '''
+
+        with patch('packager.open', mock_open(read_data=pkgfile_content), create=True):
+            packager_main()
+
+        expected_context = {'source': [],
+                            'DEPENDENCIES_DIR': 'dependencies/',
+                            'target': {'arm': [], 'x86': []},
+                            'tests': ['./pid_test.cpp']}
+        render_mock.assert_any_call('CMakeLists.txt.jinja', 'CMakeLists.txt', expected_context)
+
+
+
+
 if __name__ == "__main__":
     unittest.main()
 
