@@ -139,6 +139,22 @@ class DependencyTestCase(unittest.TestCase):
         clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
         clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
 
+    @patch('os.path.exists')
+    @patch('packager.open_package')
+    @patch('packager.clone')
+    def test_multiple_dependencies(self, clone, open_package, exists):
+        """
+        Checks that we correctly download a needed dependency.
+        """
+        open_package.return_value = {}
+        exists.return_value = False # not yet downloaded
+
+        package = {"depends":["pid", "test-runner"]}
+        download_dependencies(package)
+
+        clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
+        clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
+
 
 
 
