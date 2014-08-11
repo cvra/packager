@@ -302,7 +302,15 @@ class IntegrationTesting(unittest.TestCase):
                             'tests': ['./pid_test.cpp']}
         render_mock.assert_any_call('CMakeLists.txt.jinja', 'CMakeLists.txt', expected_context)
 
+    def test_can_find_template(self):
+        """
+        Checks that we can find template using create_jinja_env.
 
+        If the environment is not correctly prepared, it will raise a
+        TemplateNotFound exception.
+        """
+        env = create_jinja_env()
+        template = env.get_template('CMakeLists.txt.jinja')
 
 
 if __name__ == "__main__":
