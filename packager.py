@@ -157,7 +157,13 @@ def main():
     """
     Main function of the application.
     """
-    package = yaml.load(open("package.yml").read())
+    try:
+        package = yaml.load(open("package.yml").read())
+    except FileNotFoundError:
+        print('package.yml was not found. Did you forget to git add it ?')
+        return
+
+
     download_dependencies(package)
     context = generate_source_dict(package)
     context["DEPENDENCIES_DIR"] = DEPENDENCIES_DIR
