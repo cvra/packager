@@ -27,7 +27,7 @@ CSRC += {{ file }}
 
 {% endblock %}
 
-OBJS = $(CSRC:.c=.o)
+OBJS = $(CSRC:.c=.o) $(ASMSRC:.s=.o) $(CXXSRC:.cpp=.o)
 
 {% block linking %}
 all: app
