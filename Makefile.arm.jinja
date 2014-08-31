@@ -2,6 +2,8 @@
 
 {% block toolchain %}
 CC = arm-none-eabi-gcc
+CPP = arm-none-eabi-g++
+AS  = arm-none-eabi-gcc -x assembler-with-cpp
 LD = arm-none-eabi-gcc
 AR = arm-none-eabi-ar
 OC = arm-none-eabi-objcopy
@@ -12,6 +14,8 @@ SZ = arm-none-eabi-size
 
 {% block app_src %}
 {% for file in target.arm %}
-CSRC += {{ file }}
+{% if file.endswith('.c') %}CSRC += {{ file }}{% endif %}
+{% if file.endswith('.s') %}ASMSRC += {{ file }}{% endif %}
+{% if file.endswith('.cpp') %}CXXSRC += {{ file }}{% endif %}
 {% endfor %}
 {% endblock %}
