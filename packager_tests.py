@@ -50,7 +50,7 @@ class PackageNameTest(unittest.TestCase):
     def test_pkgfile_trivial_case(self):
         """ Checks that we can correctly generate the package file path. """
         package = "pid"
-        expected = "dependencies/pid/package.yml"
+        expected = os.path.join(DEPENDENCIES_DIR, "pid/package.yml")
         self.assertEqual(expected, pkgfile_for_package(package))
 
     def test_pkgfile_complex_case(self):
@@ -58,7 +58,7 @@ class PackageNameTest(unittest.TestCase):
         Checks that we can correctly find the package.yml file for complex packages.
         """
         package = {"pid":{"fork":"antoinealb"}}
-        expected = "dependencies/pid/package.yml"
+        expected = os.path.join(DEPENDENCIES_DIR, "pid/package.yml")
         self.assertEqual(expected, pkgfile_for_package(package))
 
     def test_path_for_package_simple_case(self):
@@ -66,13 +66,14 @@ class PackageNameTest(unittest.TestCase):
         Checks that we can find the path to a package directory (trivial case).
         """
         package = "pid"
-        expected = "dependencies/pid"
+        expected = os.path.join(DEPENDENCIES_DIR, "pid")
         self.assertEqual(expected, path_for_package(package))
 
     def test_path_for_package_complex_case(self):
         """ Checks package path for complex description. """
         package = {"pid":{"fork":"antoinealb"}}
-        self.assertEqual("dependencies/pid", path_for_package(package))
+        expected = os.path.join(DEPENDENCIES_DIR, "pid")
+        self.assertEqual(expected, path_for_package(package))
 
 
 class DependencyTestCase(unittest.TestCase):
@@ -116,7 +117,7 @@ class DependencyTestCase(unittest.TestCase):
         package = {"depends":["pid"]}
         download_dependencies(package)
 
-        clone.assert_called_with('https://github.com/cvra/pid', 'dependencies/pid')
+        clone.assert_called_with('https://github.com/cvra/pid', os.path.join(DEPENDENCIES_DIR, 'pid'))
 
     @patch('os.path.exists')
     @patch('packager.open_package')
@@ -136,8 +137,8 @@ class DependencyTestCase(unittest.TestCase):
         package = {"depends":['pid']}
         download_dependencies(package)
 
-        clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
-        clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
+        clone.assert_any_call('https://github.com/cvra/pid', os.path.join(DEPENDENCIES_DIR, 'pid'))
+        clone.assert_any_call('https://github.com/cvra/test-runner', os.path.join(DEPENDENCIES_DIR, 'test-runner'))
 
     @patch('os.path.exists')
     @patch('packager.open_package')
@@ -152,8 +153,8 @@ class DependencyTestCase(unittest.TestCase):
         package = {"depends":["pid", "test-runner"]}
         download_dependencies(package)
 
-        clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
-        clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
+        clone.assert_any_call('https://github.com/cvra/pid', os.path.join(DEPENDENCIES_DIR, 'pid'))
+        clone.assert_any_call('https://github.com/cvra/test-runner', os.path.join(DEPENDENCIES_DIR, 'test-runner'))
 
 class GitCloneTestCase(unittest.TestCase):
     @patch('subprocess.call')
@@ -213,7 +214,7 @@ class GenerateSourceListTestCase(unittest.TestCase):
 
         result = generate_source_list(package, 'sources')
 
-        expected = set(['./application.c', 'dependencies/pid/pid.c'])
+        expected = set(['./application.c', os.path.join(DEPENDENCIES_DIR, 'pid', 'pid.c')])
         self.assertEqual(expected, result)
 
     def test_source_dict_contains_correct_categories(self):
@@ -273,7 +274,7 @@ class IntegrationTesting(unittest.TestCase):
             packager_main()
 
         empty_context = {'source': [],
-                         'DEPENDENCIES_DIR': 'dependencies/',
+                         'DEPENDENCIES_DIR': DEPENDENCIES_DIR,
                          'target': {'arm': [], 'x86': []},
                          'tests': []}
 
@@ -297,7 +298,7 @@ class IntegrationTesting(unittest.TestCase):
             packager_main()
 
         expected_context = {'source': [],
-                            'DEPENDENCIES_DIR': 'dependencies/',
+                            'DEPENDENCIES_DIR': DEPENDENCIES_DIR,
                             'target': {'arm': [], 'x86': []},
                             'tests': ['./pid_test.cpp']}
         render_mock.assert_any_call('CMakeLists.txt.jinja', 'CMakeLists.txt', expected_context)
