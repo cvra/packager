@@ -6,7 +6,7 @@ import jinja2
 
 
 BUILD_DIR = "build/"
-DEPENDENCIES_DIR = "dependencies/"
+DEPENDENCIES_DIR = "./"
 
 def url_for_package(package):
     """
