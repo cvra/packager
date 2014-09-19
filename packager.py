@@ -127,7 +127,7 @@ def generate_source_dict(package):
     result["target"] = dict()
 
     for arch in ["x86", "arm"]:
-        result["target"][arch] = list(generate_source_list(package, category="target."+arch))
+        result["target"][arch] = sorted(list(generate_source_list(package, category="target."+arch)))
 
     return result
 
