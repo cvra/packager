@@ -168,12 +168,13 @@ def main():
     context = generate_source_dict(package)
     context["DEPENDENCIES_DIR"] = DEPENDENCIES_DIR
 
+    if context["tests"]:
+        render_template_to_file("CMakeLists.txt.jinja", "CMakeLists.txt", context)
+
     if "templates" in package:
         for template, dest in package["templates"].items():
             render_template_to_file(template, dest, context)
 
-    if context["tests"]:
-        render_template_to_file("CMakeLists.txt.jinja", "CMakeLists.txt", context)
 
 if __name__ == "__main__":
     main()
