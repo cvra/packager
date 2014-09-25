@@ -227,6 +227,21 @@ class GenerateSourceListTestCase(unittest.TestCase):
         self.assertIn('target', result)
         self.assertIn('x86', result['target'])
         self.assertIn('arm', result['target'])
+        self.assertIn('include_directories', result)
+
+    @patch('packager.open_package')
+    def test_include_directory_dep(self, open_package_mock):
+        """
+        Tests that dependencies include directories are included in the result.
+        """
+        package = {'sources':['application.c'],'depends':['pid']}
+        pid_package = {'sources':['pid.c'], 'include_directories':['poney']}
+        open_package_mock.return_value = pid_package
+
+        result = generate_source_list(package, 'include_directories')
+        expected = set([os.path.join(DEPENDENCIES_DIR, 'pid', 'poney')])
+
+        self.assertEqual(result, expected)
 
 class TemplateRenderingTestCase(unittest.TestCase):
 
@@ -273,9 +288,10 @@ class IntegrationTesting(unittest.TestCase):
             packager_main()
 
         empty_context = {'source': [],
-                         'DEPENDENCIES_DIR': 'dependencies/',
                          'target': {'arm': [], 'x86': []},
-                         'tests': []}
+                         'tests': [],
+                         'include_directories': ['dependencies/']
+                         }
 
         render_mock.assert_any_call('Makefile.jinja', 'Makefile', empty_context)
         render_mock.assert_any_call('Test.jinja', 'Test', empty_context)
@@ -297,9 +313,10 @@ class IntegrationTesting(unittest.TestCase):
             packager_main()
 
         expected_context = {'source': [],
-                            'DEPENDENCIES_DIR': 'dependencies/',
                             'target': {'arm': [], 'x86': []},
-                            'tests': ['./pid_test.cpp']}
+                            'tests': ['./pid_test.cpp'],
+                            'include_directories': ['dependencies/']
+                            }
         render_mock.assert_any_call('CMakeLists.txt.jinja', 'CMakeLists.txt', expected_context)
 
     def test_can_find_template(self):

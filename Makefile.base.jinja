@@ -15,7 +15,9 @@ CFLAGS = -Wall
 LDFLAGS =
 {% endblock %}
 
-CFLAGS += -I {{DEPENDENCIES_DIR}}
+{% for dir in include_directories %}
+CFLAGS += -I {{ dir }}
+{% endfor %}
 
 # C source files
 CSRC = 

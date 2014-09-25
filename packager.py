@@ -121,7 +121,7 @@ def generate_source_dict(package):
     """
     result = dict()
 
-    for cat in ["source", "tests"]:
+    for cat in ["source", "tests", "include_directories"]:
         result[cat] = list(generate_source_list(package, category=cat))
 
     result["target"] = dict()
@@ -166,7 +166,7 @@ def main():
 
     download_dependencies(package)
     context = generate_source_dict(package)
-    context["DEPENDENCIES_DIR"] = DEPENDENCIES_DIR
+    context['include_directories'].append(DEPENDENCIES_DIR)
 
     if context["tests"]:
         render_template_to_file("CMakeLists.txt.jinja", "CMakeLists.txt", context)
