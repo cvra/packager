@@ -113,7 +113,9 @@ def generate_source_list(package, category):
 
         return sources
 
-    return list(generate_source_set(package, category, basedir='./'))
+    source_list = list(generate_source_set(package, category, basedir='./'))
+
+    return sorted(source_list)
 
 def generate_source_dict(package):
     """
@@ -123,12 +125,12 @@ def generate_source_dict(package):
     result = dict()
 
     for cat in ["source", "tests", "include_directories"]:
-        result[cat] = sorted(list(generate_source_list(package, category=cat)))
+        result[cat] = generate_source_list(package, category=cat)
 
     result["target"] = dict()
 
     for arch in ["x86", "arm"]:
-        result["target"][arch] = sorted(list(generate_source_list(package, category="target."+arch)))
+        result["target"][arch] = generate_source_list(package, category="target."+arch)
 
     return result
 
