@@ -91,28 +91,29 @@ def download_dependencies(package):
 
         download_dependencies(open_package(dep))
 
-def generate_source_list(package, category, basedir="./"):
+def generate_source_list(package, category):
     """
-    Recursively generates a list of all source files needed to build a package
-    using basedir as a path prefix.
-    This function returns a set, which implies the uniqueness of file names.
+    Recursively generates a list of all source files needed to build a package.
     The category parameter can be "source", "tests", etc.
     """
 
-    if category in package:
-        sources = set([os.path.join(basedir, i) for i in package[category]])
-    else:
-        sources = set()
+    def generate_source_set(package, category, basedir):
+        if category in package:
+            sources = set([os.path.join(basedir, i) for i in package[category]])
+        else:
+            sources = set()
 
-    if "depends" not in package:
+        if "depends" not in package:
+            return sources
+
+        for dep in package["depends"]:
+            pkg_dir = path_for_package(dep)
+            dep_src = generate_source_set(open_package(dep), category, pkg_dir)
+            sources = sources.union(dep_src)
+
         return sources
 
-    for dep in package["depends"]:
-        pkg_dir = path_for_package(dep)
-        dep_src = generate_source_list(open_package(dep), category, pkg_dir)
-        sources = sources.union(dep_src)
-
-    return sources
+    return list(generate_source_set(package, category, basedir='./'))
 
 def generate_source_dict(package):
     """

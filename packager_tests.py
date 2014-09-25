@@ -191,7 +191,7 @@ class GenerateSourceListTestCase(unittest.TestCase):
         """
         package = {}
         result = generate_source_list(package, 'sources')
-        self.assertEqual(set(), result)
+        self.assertEqual([], result)
 
     def test_source_package_no_dep(self):
         """
@@ -199,7 +199,7 @@ class GenerateSourceListTestCase(unittest.TestCase):
         """
         package = {'sources':['pid.c']}
         result = generate_source_list(package, 'sources')
-        self.assertEqual(set(['./pid.c']), result)
+        self.assertEqual(['./pid.c'], result)
 
     @patch('packager.open_package')
     def test_source_package_dep(self, open_package_mock):
@@ -212,9 +212,9 @@ class GenerateSourceListTestCase(unittest.TestCase):
         open_package_mock.return_value = pid_package
 
         result = generate_source_list(package, 'sources')
+        expected = ['./application.c', 'dependencies/pid/pid.c']
 
-        expected = set(['./application.c', 'dependencies/pid/pid.c'])
-        self.assertEqual(expected, result)
+        self.assertEqual(sorted(expected), sorted(result))
 
     def test_source_dict_contains_correct_categories(self):
         """
@@ -256,7 +256,7 @@ class GenerateSourceListTestCase(unittest.TestCase):
         open_package_mock.return_value = pid_package
 
         result = generate_source_list(package, 'include_directories')
-        expected = set([os.path.join(DEPENDENCIES_DIR, 'pid', 'poney')])
+        expected = [os.path.join(DEPENDENCIES_DIR, 'pid', 'poney')]
 
         self.assertEqual(result, expected)
 
