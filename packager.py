@@ -122,7 +122,7 @@ def generate_source_dict(package):
     result = dict()
 
     for cat in ["source", "tests", "include_directories"]:
-        result[cat] = list(generate_source_list(package, category=cat))
+        result[cat] = sorted(list(generate_source_list(package, category=cat)))
 
     result["target"] = dict()
 

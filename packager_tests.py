@@ -229,6 +229,23 @@ class GenerateSourceListTestCase(unittest.TestCase):
         self.assertIn('arm', result['target'])
         self.assertIn('include_directories', result)
 
+    def test_target_source_are_sorted(self):
+        """
+        Tests if the target source list is sorted.
+        """
+        package = {'target.arm':['b', 'a']}
+        result = generate_source_dict(package)['target']['arm']
+        self.assertEqual(result, sorted(result))
+
+    def test_test_source_is_sorted_too(self):
+        """
+        Checks if the tests source list is sorted too.
+        """
+        package = {'tests':['b', 'a']}
+        result = generate_source_dict(package)['tests']
+        self.assertEqual(result, sorted(result))
+
+
     @patch('packager.open_package')
     def test_include_directory_dep(self, open_package_mock):
         """
