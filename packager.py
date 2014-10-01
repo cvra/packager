@@ -59,7 +59,7 @@ def clone(url, dest):
     """
     Git clones the given URL to the given destination path.
     """
-    command = "git clone {url} {path}".format(url=url, path=dest)
+    command = "git clone --recursive {url} {path}".format(url=url, path=dest)
     subprocess.call(command.split())
 
 def pkgfile_for_package(package):

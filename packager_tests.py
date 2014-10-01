@@ -160,7 +160,7 @@ class GitCloneTestCase(unittest.TestCase):
     def test_arguments_are_passed_correctly(self, call):
         url = 'https://github.com/cvra/pid'
         dest = 'dependencies/pid'
-        expected = 'git clone https://github.com/cvra/pid dependencies/pid'.split()
+        expected = 'git clone --recursive https://github.com/cvra/pid dependencies/pid'.split()
         clone(url, dest)
         call.assert_called_with(expected)
 
