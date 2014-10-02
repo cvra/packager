@@ -295,6 +295,24 @@ class TemplateRenderingTestCase(unittest.TestCase):
         open_mock.assert_any_call('dest', 'w')
         open_mock().write.assert_any_call('OLOL')
 
+class ArgumentParsingTestCase(unittest.TestCase):
+    def test_initial_value_is_clone(self):
+        """
+        Checks that the initial download method is clone.
+        """
+        commandline = "".split()
+        args = parse_args(commandline)
+        self.assertEqual(args.download_method, clone)
+
+    def test_can_use_submodules(self):
+        """
+        Checks that we can use git submodules using the long option.
+        """
+        commandline = "--submodules".split()
+        args = parse_args(commandline)
+        self.assertEqual(args.download_method, submodule_add)
+
+
 class IntegrationTesting(unittest.TestCase):
     @patch('packager.render_template_to_file')
     def test_all_templates_are_rendered(self, render_mock):

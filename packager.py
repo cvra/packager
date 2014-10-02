@@ -3,6 +3,7 @@ import yaml
 import os.path
 import subprocess
 import jinja2
+import argparse
 
 
 BUILD_DIR = "build/"
@@ -167,6 +168,16 @@ def render_template_to_file(template_name, dest_path, context):
     with open(dest_path, "w") as output:
         output.write(rendered)
 
+def parse_args(args=None):
+    """
+    Parses the commandline arguments.
+    """
+    description = "Download package dependencies and creates build files."
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('--submodules', dest='download_method', action='store_const', const=submodule_add, default=clone)
+
+    return parser.parse_args(args=args)
+
 def main():
     """
     Main function of the application.
@@ -177,8 +188,9 @@ def main():
         print('package.yml was not found. Did you forget to git add it ?')
         return
 
+    args = parse_args()
 
-    download_dependencies(package, method=clone)
+    download_dependencies(package, method=args.download_method)
     context = generate_source_dict(package)
     context['include_directories'].append(DEPENDENCIES_DIR)
 
