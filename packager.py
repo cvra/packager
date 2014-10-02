@@ -75,9 +75,13 @@ def open_package(package):
     pkgfile = pkgfile_for_package(package)
     return yaml.load(open(pkgfile).read())
 
-def download_dependencies(package):
-    """ Download all dependencies for a given package. """
+def download_dependencies(package, method):
+    """
+    Download all dependencies for a given package.
 
+    method is a function taking an url and a dest path and will be used for
+    downloading the dependency.
+    """
     # Skip everything if we dont have deps
     if "depends" not in package:
         return
@@ -87,9 +91,9 @@ def download_dependencies(package):
         repo_path = path_for_package(dep)
 
         if not os.path.exists(repo_path):
-            clone(repo_url, repo_path)
+            method(repo_url, repo_path)
 
-        download_dependencies(open_package(dep))
+        download_dependencies(open_package(dep), method=method)
 
 def generate_source_list(package, category):
     """
@@ -167,7 +171,7 @@ def main():
         return
 
 
-    download_dependencies(package)
+    download_dependencies(package, method=clone)
     context = generate_source_dict(package)
     context['include_directories'].append(DEPENDENCIES_DIR)
 

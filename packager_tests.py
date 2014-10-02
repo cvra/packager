@@ -77,20 +77,22 @@ class PackageNameTest(unittest.TestCase):
 
 class DependencyTestCase(unittest.TestCase):
 
-    @patch("packager.clone")
-    def test_no_depencendy_no_clone(self, clone_mock):
+    def setUp(self):
+        self.clone = Mock()
+
+    def test_no_dependency_no_clone(self):
         """
-        Checks that a package without dependencies will not create any git clone.
+        Checks that a package without dependencies will not create any download
+        operation.
         """
         package = {} # no dependencies
-        download_dependencies(package)
+        download_dependencies(package, method=self.clone)
 
-        self.assertEqual([], clone_mock.call_args_list)
+        self.assertEqual([], self.clone.call_args_list)
 
     @patch('os.path.exists')
     @patch('packager.open_package')
-    @patch("packager.clone")
-    def test_dependency_already_there(self, clone, open_package, exists):
+    def test_dependency_already_there(self, open_package, exists):
         """
         Checks that if a package is already downloaded we don't download it
         again.
@@ -99,14 +101,13 @@ class DependencyTestCase(unittest.TestCase):
         exists.return_value = True
 
         package = {"depends":["pid"]}
-        download_dependencies(package)
+        download_dependencies(package, method=self.clone)
 
-        self.assertEqual([], clone.call_args_list)
+        self.assertEqual([], self.clone.call_args_list)
 
     @patch('os.path.exists')
     @patch('packager.open_package')
-    @patch('packager.clone')
-    def test_dependency_download_single_level(self, clone, open_package, exists):
+    def test_dependency_download_single_level(self, open_package, exists):
         """
         Checks that we correctly download a needed dependency.
         """
@@ -114,18 +115,18 @@ class DependencyTestCase(unittest.TestCase):
         exists.return_value = False # not yet downloaded
 
         package = {"depends":["pid"]}
-        download_dependencies(package)
+        download_dependencies(package, method=self.clone)
 
-        clone.assert_called_with('https://github.com/cvra/pid', 'dependencies/pid')
+        self.clone.assert_called_with('https://github.com/cvra/pid', 'dependencies/pid')
 
     @patch('os.path.exists')
     @patch('packager.open_package')
-    @patch('packager.clone')
-    def test_dependency_has_a_dependency_itself(self, clone, open_package, exists):
+    def test_dependency_has_a_dependency_itself(self, open_package, exists):
         """
         Checks that if a dependency of the package has itself a dependency it
         will be cloned too.
         """
+
         exists.return_value = False # we did not download anything yet
 
         # simulates loading a package with dependency
@@ -134,15 +135,14 @@ class DependencyTestCase(unittest.TestCase):
         open_package.side_effect = [pid_package, testrunner_package]
 
         package = {"depends":['pid']}
-        download_dependencies(package)
+        download_dependencies(package, method=self.clone)
 
-        clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
-        clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
+        self.clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
+        self.clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
 
     @patch('os.path.exists')
     @patch('packager.open_package')
-    @patch('packager.clone')
-    def test_multiple_dependencies(self, clone, open_package, exists):
+    def test_multiple_dependencies(self, open_package, exists):
         """
         Checks that we correctly download a needed dependency.
         """
@@ -150,10 +150,11 @@ class DependencyTestCase(unittest.TestCase):
         exists.return_value = False # not yet downloaded
 
         package = {"depends":["pid", "test-runner"]}
-        download_dependencies(package)
+        download_dependencies(package, method=self.clone)
 
-        clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
-        clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
+        self.clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
+        self.clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
+
 
 class GitCloneTestCase(unittest.TestCase):
     @patch('subprocess.call')
