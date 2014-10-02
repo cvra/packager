@@ -165,6 +165,15 @@ class GitCloneTestCase(unittest.TestCase):
         clone(url, dest)
         call.assert_called_with(expected)
 
+class GitSumboduleTestCase(unittest.TestCase):
+    @patch('subprocess.call')
+    def test_arguments(self, call):
+        url = 'https://github.com/cvra/pid'
+        dest = 'dependencies/pid'
+        expected = 'git submodule add https://github.com/cvra/pid dependencies/pid'.split()
+        submodule_add(url, dest)
+        call.assert_called_with(expected)
+
 class OpenPackageTestCase(unittest.TestCase):
     def test_load_simple_package(self):
         """

@@ -62,6 +62,13 @@ def clone(url, dest):
     command = "git clone --recursive {url} {path}".format(url=url, path=dest)
     subprocess.call(command.split())
 
+def submodule_add(url, dest):
+    """
+    Adds a git submodule with the given url at the dest path.
+    """
+    command = "git submodule add {url} {path}".format(url=url, path=dest)
+    subprocess.call(command.split())
+
 def pkgfile_for_package(package):
     """
     Returns the path to the package.yml file for the given package description.
