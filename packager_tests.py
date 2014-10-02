@@ -142,6 +142,24 @@ class DependencyTestCase(unittest.TestCase):
 
     @patch('os.path.exists')
     @patch('packager.open_package')
+    def test_cannot_find_package_file_in_dependency(self, open_package, exists):
+        """
+        Checks that a package where we cannot find a package.yml is simply skipped.
+        """
+
+        # Raise IOError when the packager tries to open the package.yml file of
+        # PID or poney
+        open_package.side_effect = IOError()
+        exists.return_value = False # not yet downloaded
+
+        package = {"depends":["pid", "poney"]}
+        download_dependencies(package, method=self.clone)
+        self.clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
+        self.clone.assert_any_call('https://github.com/cvra/poney', 'dependencies/poney')
+
+
+    @patch('os.path.exists')
+    @patch('packager.open_package')
     def test_multiple_dependencies(self, open_package, exists):
         """
         Checks that we correctly download a needed dependency.
@@ -225,6 +243,22 @@ class GenerateSourceListTestCase(unittest.TestCase):
         expected = ['./application.c', 'dependencies/pid/pid.c']
 
         self.assertEqual(sorted(expected), sorted(result))
+
+    @patch('packager.open_package')
+    def test_skip_package_if_no_yml(self, open_package_mock):
+        """
+        Checks that a package file without any yml file is simply skipped.
+        """
+
+        # Simple package which will try to open a dependency package.yml
+        package = {'sources':['application.c'],'depends':['pid']}
+
+        # Simulates a non existing package.yml
+        open_package_mock.side_effect = IOError()
+
+        result = generate_source_list(package, 'sources')
+
+        self.assertEqual(['./application.c'], result)
 
     def test_source_dict_contains_correct_categories(self):
         """

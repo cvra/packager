@@ -101,7 +101,12 @@ def download_dependencies(package, method):
         if not os.path.exists(repo_path):
             method(repo_url, repo_path)
 
-        download_dependencies(open_package(dep), method=method)
+        try:
+            dep = open_package(dep)
+        except IOError:
+            continue
+
+        download_dependencies(dep, method=method)
 
 def generate_source_list(package, category):
     """
@@ -120,7 +125,15 @@ def generate_source_list(package, category):
 
         for dep in package["depends"]:
             pkg_dir = path_for_package(dep)
-            dep_src = generate_source_set(open_package(dep), category, pkg_dir)
+
+            # Tries to open the dependency package.yml file.
+            # If it doesn't exist, simply proceed to next dependency
+            try:
+                dep = open_package(dep)
+            except IOError:
+                continue
+
+            dep_src = generate_source_set(dep, category, pkg_dir)
             sources = sources.union(dep_src)
 
         return sources
