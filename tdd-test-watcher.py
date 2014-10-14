@@ -26,7 +26,7 @@ def run_tests(changed_path):
     """
     Run all the tests after a change in changed_path.
     """
-    failure = subprocess.call("make -C build/".split())
+    failure = subprocess.call("make -C build/".split(), stdout=subprocess.DEVNULL)
 
     if failure:
         cprint('Build failed after {} changed!'.format(changed_path), 'red')
