@@ -195,13 +195,13 @@ def main():
     """
     Main function of the application.
     """
+    args = parse_args()
+
     try:
         package = yaml.load(open("package.yml").read())
     except FileNotFoundError:
         print('package.yml was not found. Did you forget to git add it ?')
         return
-
-    args = parse_args()
 
     download_dependencies(package, method=args.download_method)
     context = generate_source_dict(package)
