@@ -8,4 +8,4 @@ install:
     - pip install pyyaml jinja2
 
 script:
-    - python ./packager_tests.py
+    - python -m unittest
