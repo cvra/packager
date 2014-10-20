@@ -66,3 +66,6 @@ Some explanation :
 * `source` is an array of sources that should be included in both unit-test and real life application.
 * `tests` is the source of all tests files.
 
+## Running the tests
+
+To run the tests, simply do `python -m unittest` from the root of the project.
