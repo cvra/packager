@@ -154,8 +154,10 @@ def generate_source_dict(package):
 
     result["target"] = dict()
 
-    for arch in ["x86", "arm"]:
-        result["target"][arch] = generate_source_list(package, category="target."+arch)
+    targets = [key for key in package.keys() if key.startswith("target.")]
+
+    for arch in targets:
+        result["target"][arch[len("target."):]] = generate_source_list(package, category=arch)
 
     return result
 
