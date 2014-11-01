@@ -203,6 +203,11 @@ def main():
         print('package.yml was not found. Did you forget to git add it ?')
         return
 
+    # fixme: this redefines the constant DEPENDENCIES_DIR if dependency-dir is set for the top-level package.yml
+    if 'dependency-dir' in package:
+        global DEPENDENCIES_DIR
+        DEPENDENCIES_DIR = package['dependency-dir']
+
     download_dependencies(package, method=args.download_method)
     context = generate_source_dict(package)
     context['include_directories'].append(DEPENDENCIES_DIR)
