@@ -269,9 +269,16 @@ class GenerateSourceListTestCase(unittest.TestCase):
         self.assertIn('source', result)
         self.assertIn('tests', result)
         self.assertIn('target', result)
-        self.assertIn('x86', result['target'])
-        self.assertIn('arm', result['target'])
         self.assertIn('include_directories', result)
+
+    def test_source_target_are_discovered(self):
+        """
+        Tests that the target categories are detected.
+        """
+        result = generate_source_dict({'target.x86':[], 'target.linux':[]})
+        self.assertIn('x86', result['target'])
+        self.assertIn('linux', result['target'])
+
 
     def test_target_source_are_sorted(self):
         """
@@ -367,7 +374,7 @@ class IntegrationTesting(unittest.TestCase):
             packager_main()
 
         empty_context = {'source': [],
-                         'target': {'arm': [], 'x86': []},
+                         'target': {},
                          'tests': [],
                          'include_directories': ['dependencies/']
                          }
@@ -392,7 +399,7 @@ class IntegrationTesting(unittest.TestCase):
             packager_main()
 
         expected_context = {'source': [],
-                            'target': {'arm': [], 'x86': []},
+                            'target': {},
                             'tests': ['./pid_test.cpp'],
                             'include_directories': ['dependencies/']
                             }
