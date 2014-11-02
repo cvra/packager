@@ -157,7 +157,8 @@ def generate_source_dict(package):
     targets = [key for key in package.keys() if key.startswith("target.")]
 
     for arch in targets:
-        result["target"][arch[len("target."):]] = generate_source_list(package, category=arch)
+        arch = arch.replace("target.", "")
+        result["target"][arch] = generate_source_list(package, category=arch)
 
     return result
 
