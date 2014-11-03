@@ -153,7 +153,7 @@ def generate_source_list(package, category, filemap=None):
 
     return sorted(source_list)
 
-def generate_source_dict(package):
+def generate_source_dict(package, filemap=None):
     """
     Generates a dictionary containing a list of files for each source category.
     The result can then be used for template rendering for example.
@@ -161,7 +161,7 @@ def generate_source_dict(package):
     result = dict()
 
     for cat in ["source", "tests", "include_directories"]:
-        result[cat] = generate_source_list(package, category=cat)
+        result[cat] = generate_source_list(package, category=cat, filemap=filemap)
 
     result["target"] = dict()
 
@@ -169,7 +169,7 @@ def generate_source_dict(package):
 
     for arch in targets:
         arch = arch.replace("target.", "")
-        result["target"][arch] = generate_source_list(package, category=arch)
+        result["target"][arch] = generate_source_list(package, category=arch, filemap=filemap)
 
     return result
 
@@ -235,12 +235,16 @@ def main():
 
     # fixme: this redefines the constant DEPENDENCIES_DIR if dependency-dir is set for the top-level package.yml
     if 'dependency-dir' in package:
-        global DEPENDENCIES_DIR
-        DEPENDENCIES_DIR = package['dependency-dir']
+        dep = package['dependency-dir']
+    else:
+        dep = DEPENDENCIES_DIR
 
-    download_dependencies(package, method=args.download_method)
-    context = generate_source_dict(package)
-    context['include_directories'].append(DEPENDENCIES_DIR)
+    filemap = defaultdict(lambda: dep)
+
+    download_dependencies(package, method=args.download_method, filemap=filemap)
+    context = generate_source_dict(package, filemap)
+
+    context['include_directories'].append(dep)
 
     if context["tests"]:
         render_template_to_file("CMakeLists.txt.jinja", "CMakeLists.txt", context)
