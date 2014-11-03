@@ -8,23 +8,36 @@ except ImportError:
     from mock import *
 
 class OpenPackageTestCase(unittest.TestCase):
+    package_content = """
+    source:
+        - pid.c
+        - pidconfig.c
+    """
+    expected = {"source":['pid.c', 'pidconfig.c']}
+
     def test_load_simple_package(self):
         """
         Tests that loading a package given its simple description (name string)
         works as expected.
         """
+        with patch('packager.open', mock_open(read_data=self.package_content), create=True) as m:
+            package = open_package('pid')
+            m.assert_called_with('dependencies/pid/package.yml')
 
-        package_content = """
-        source:
-            - pid.c
-            - pidconfig.c
+        self.assertEqual(self.expected, package)
+
+
+    def test_load_filemap(self):
+        """
+        Checks that the filemap is respected.
         """
 
-        with patch('packager.open', mock_open(read_data=package_content), create=True):
-            package = open_package('pid')
+        with patch('packager.open', mock_open(read_data=self.package_content), create=True) as m:
+            package = open_package('pid', {'pid':'foo'})
+            m.assert_called_with('foo/pid/package.yml')
 
         expected = {"source":['pid.c', 'pidconfig.c']}
-        self.assertEqual(expected, package)
+        self.assertEqual(self.expected, package)
 
 class TemplateRenderingTestCase(unittest.TestCase):
 

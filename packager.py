@@ -79,17 +79,17 @@ def submodule_add(url, dest):
     command = "git submodule add {url} {path}".format(url=url, path=dest)
     subprocess.call(command.split())
 
-def pkgfile_for_package(package):
+def pkgfile_for_package(package, filemap=None):
     """
     Returns the path to the package.yml file for the given package description.
     """
-    return os.path.join(path_for_package(package), "package.yml")
+    return os.path.join(path_for_package(package, filemap), "package.yml")
 
-def open_package(package):
+def open_package(package, filemap=None):
     """
     Load a package given its description / name.
     """
-    pkgfile = pkgfile_for_package(package)
+    pkgfile = pkgfile_for_package(package, filemap)
     return yaml.load(open(pkgfile).read())
 
 def download_dependencies(package, method, filemap=None):
@@ -113,7 +113,7 @@ def download_dependencies(package, method, filemap=None):
             method(repo_url, repo_path)
 
         try:
-            dep = open_package(dep)
+            dep = open_package(dep, filemap)
         except IOError:
             continue
 
