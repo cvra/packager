@@ -39,13 +39,21 @@ def url_for_package(package):
 
     raise ValueError("Package must be either a string or contain a fork or URL.")
 
-def path_for_package(package):
+def path_for_package(package, module_map=None):
     """
     Returns the path to the downloaded package directory for given package
     description.
+
+    It can also take a dictionnary-like object mapping a module name to its
+    download folder.
     """
     package = package_name_from_desc(package)
-    return os.path.join(DEPENDENCIES_DIR, package)
+    if module_map is None:
+        package_folder = DEPENDENCIES_DIR
+    else:
+        package_folder = module_map[package]
+
+    return os.path.join(package_folder, package)
 
 
 def package_name_from_desc(package):
@@ -84,12 +92,14 @@ def open_package(package):
     pkgfile = pkgfile_for_package(package)
     return yaml.load(open(pkgfile).read())
 
-def download_dependencies(package, method):
+def download_dependencies(package, method, filemap=None):
     """
     Download all dependencies for a given package.
 
     method is a function taking an url and a dest path and will be used for
     downloading the dependency.
+
+    filemap is a dictionnary mapping modules name to folders.
     """
     # Skip everything if we dont have deps
     if "depends" not in package:
@@ -97,7 +107,7 @@ def download_dependencies(package, method):
 
     for dep in package["depends"]:
         repo_url = url_for_package(dep)
-        repo_path = path_for_package(dep)
+        repo_path = path_for_package(dep, filemap)
 
         if not os.path.exists(repo_path):
             method(repo_url, repo_path)
@@ -109,13 +119,13 @@ def download_dependencies(package, method):
 
         download_dependencies(dep, method=method)
 
-def generate_source_list(package, category):
+def generate_source_list(package, category, filemap=None):
     """
     Recursively generates a list of all source files needed to build a package.
     The category parameter can be "source", "tests", etc.
     """
 
-    def generate_source_set(package, category, basedir):
+    def generate_source_set(package, category, filemap, basedir):
         if category in package:
             sources = set([os.path.join(basedir, i) for i in package[category]])
         else:
@@ -125,7 +135,7 @@ def generate_source_list(package, category):
             return sources
 
         for dep in package["depends"]:
-            pkg_dir = path_for_package(dep)
+            pkg_dir = path_for_package(dep, filemap)
 
             # Tries to open the dependency package.yml file.
             # If it doesn't exist, simply proceed to next dependency
@@ -134,12 +144,12 @@ def generate_source_list(package, category):
             except IOError:
                 continue
 
-            dep_src = generate_source_set(dep, category, pkg_dir)
+            dep_src = generate_source_set(dep, category, filemap, pkg_dir)
             sources = sources.union(dep_src)
 
         return sources
 
-    source_list = list(generate_source_set(package, category, basedir='./'))
+    source_list = list(generate_source_set(package, category, filemap, basedir='./'))
 
     return sorted(source_list)
 

@@ -74,6 +74,15 @@ class PackageNameTest(unittest.TestCase):
         package = {"pid":{"fork":"antoinealb"}}
         self.assertEqual("dependencies/pid", path_for_package(package))
 
+    def test_path_for_package_with_a_map(self):
+        """
+        Checks that the module path is really taken from the dictionnary.
+        """
+        package = "pid"
+        m = {"pid":"control"}
+        self.assertEqual("control/pid", path_for_package(package, m))
+
+
 
 class DependencyTestCase(unittest.TestCase):
 
@@ -173,6 +182,23 @@ class DependencyTestCase(unittest.TestCase):
         self.clone.assert_any_call('https://github.com/cvra/pid', 'dependencies/pid')
         self.clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
 
+    @patch('os.path.exists')
+    @patch('packager.open_package')
+    def test_dependencies_filemap(self, open_package, exists):
+        """
+        Checks that we can correctly map the downloaded file to the correct
+        location.
+        """
+        open_package.return_value = {}
+        exists.return_value = False # not yet downloaded
+
+        package = {"depends":["pid"]}
+        m = {'pid':'foo'}
+
+        download_dependencies(package, method=self.clone, filemap=m)
+
+        self.clone.assert_any_call('https://github.com/cvra/pid', 'foo/pid')
+
 
 class GitCloneTestCase(unittest.TestCase):
     @patch('subprocess.call')
@@ -228,6 +254,21 @@ class GenerateSourceListTestCase(unittest.TestCase):
         package = {'sources':['pid.c']}
         result = generate_source_list(package, 'sources')
         self.assertEqual(['./pid.c'], result)
+
+    @patch('packager.open_package')
+    def test_source_in_filemap(self, open_package_mock):
+        """
+        Tests that we can create a package with dependencies in a specified folder.
+        """
+        package = {'sources':['application.c'],'depends':['pid']}
+        pid_package = {'sources':['pid.c']}
+        open_package_mock.return_value = pid_package
+
+        filemap = {'pid':'foo'}
+
+        result = generate_source_list(package, 'sources', filemap=filemap)
+
+        self.assertEqual(['./application.c', 'foo/pid/pid.c'], result)
 
     @patch('packager.open_package')
     def test_source_package_dep(self, open_package_mock):
