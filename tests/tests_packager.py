@@ -415,6 +415,41 @@ class IntegrationTesting(unittest.TestCase):
         env = create_jinja_env()
         template = env.get_template('CMakeLists.txt.jinja')
 
+class DependencyLocationBuilderTestCase(unittest.TestCase):
+
+    def test_can_create_empty_dict(self):
+        """
+        This test checks if the default value for the location map is correctly
+        defined to DEPENDENCIES_DIR.
+        """
+        locations = create_dependency_location_map({})
+        self.assertEqual(locations['foo'], DEPENDENCIES_DIR)
+
+    def test_can_create_from_simple_dict(self):
+        """
+        Checks if we can create the dictionnary from a map with only one item.
+        """
+        locations = create_dependency_location_map({'foo':['bar']})
+        self.assertEqual('foo', locations['bar'])
+
+    def test_can_create_from_complex_dict(self):
+        """
+        Checks if we can create a module map from a more complex description.
+        """
+        original_map = {}
+        original_map['control'] = ['pid', 'odometry']
+        original_map['foo'] = ['bar']
+
+        locations = create_dependency_location_map(original_map)
+
+        self.assertEqual("control", locations["pid"])
+        self.assertEqual("control", locations["odometry"])
+        self.assertEqual("foo", locations["bar"])
+
+
+
+
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -4,6 +4,7 @@ import os.path
 import subprocess
 import jinja2
 import argparse
+from collections import defaultdict
 
 
 BUILD_DIR = "build/"
@@ -161,6 +162,22 @@ def generate_source_dict(package):
         result["target"][arch] = generate_source_list(package, category=arch)
 
     return result
+
+def create_dependency_location_map(filemap):
+    """
+    This function receives a dependency map in the following format:
+    {'control':['pid', 'odometry'], 'foo':['bar']} and converts it to the
+    following format : {'pid':'control', 'odometry':'control', 'bar':'foo'}. It
+    also sets a sensible default value.
+    """
+    locations = defaultdict(lambda: DEPENDENCIES_DIR)
+
+    for destination, packages in filemap.items():
+        for p in packages:
+            locations[p] = destination
+
+    return locations
+
 
 def create_jinja_env():
     """
