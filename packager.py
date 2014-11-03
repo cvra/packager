@@ -140,7 +140,7 @@ def generate_source_list(package, category, filemap=None):
             # Tries to open the dependency package.yml file.
             # If it doesn't exist, simply proceed to next dependency
             try:
-                dep = open_package(dep)
+                dep = open_package(dep, filemap)
             except IOError:
                 continue
 

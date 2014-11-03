@@ -39,6 +39,9 @@ class GenerateSourceListTestCase(unittest.TestCase):
 
         self.assertEqual(['./application.c', 'foo/pid/pid.c'], result)
 
+        # Checks that the opened file is foo/pid/package.yml
+        open_package_mock.assert_called_with('pid', filemap)
+
     @patch('packager.open_package')
     def test_source_package_dep(self, open_package_mock):
         """
