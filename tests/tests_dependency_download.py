@@ -74,6 +74,28 @@ class DependencyTestCase(unittest.TestCase):
 
     @patch('os.path.exists')
     @patch('packager.open_package')
+    def test_dependency_has_a_dependency_itself_filemap(self, open_package, exists):
+        """
+        Checks that dependencies of dependencies are downloaded in the correctplace too
+        """
+
+        exists.return_value = False # we did not download anything yet
+
+        # simulates loading a package with dependency
+        pid_package = {'depends':['test-runner']}
+        testrunner_package = {}
+        open_package.side_effect = [pid_package, testrunner_package]
+
+        package = {"depends":['pid']}
+        filemap = {'pid':'foo', 'test-runner':'foo'}
+
+        download_dependencies(package, method=self.clone, filemap=filemap)
+
+        self.clone.assert_any_call('https://github.com/cvra/pid', 'foo/pid')
+        self.clone.assert_any_call('https://github.com/cvra/test-runner', 'foo/test-runner')
+
+    @patch('os.path.exists')
+    @patch('packager.open_package')
     def test_cannot_find_package_file_in_dependency(self, open_package, exists):
         """
         Checks that a package where we cannot find a package.yml is simply skipped.

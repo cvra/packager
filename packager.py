@@ -117,7 +117,7 @@ def download_dependencies(package, method, filemap=None):
         except IOError:
             continue
 
-        download_dependencies(dep, method=method)
+        download_dependencies(dep, method=method, filemap=filemap)
 
 def generate_source_list(package, category, filemap=None):
     """
