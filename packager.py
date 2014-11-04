@@ -4,6 +4,7 @@ import os.path
 import subprocess
 import jinja2
 import argparse
+from collections import defaultdict
 
 
 BUILD_DIR = "build/"
@@ -38,13 +39,21 @@ def url_for_package(package):
 
     raise ValueError("Package must be either a string or contain a fork or URL.")
 
-def path_for_package(package):
+def path_for_package(package, module_map=None):
     """
     Returns the path to the downloaded package directory for given package
     description.
+
+    It can also take a dictionnary-like object mapping a module name to its
+    download folder.
     """
     package = package_name_from_desc(package)
-    return os.path.join(DEPENDENCIES_DIR, package)
+    if module_map is None:
+        package_folder = DEPENDENCIES_DIR
+    else:
+        package_folder = module_map[package]
+
+    return os.path.join(package_folder, package)
 
 
 def package_name_from_desc(package):
@@ -70,25 +79,27 @@ def submodule_add(url, dest):
     command = "git submodule add {url} {path}".format(url=url, path=dest)
     subprocess.call(command.split())
 
-def pkgfile_for_package(package):
+def pkgfile_for_package(package, filemap=None):
     """
     Returns the path to the package.yml file for the given package description.
     """
-    return os.path.join(path_for_package(package), "package.yml")
+    return os.path.join(path_for_package(package, filemap), "package.yml")
 
-def open_package(package):
+def open_package(package, filemap=None):
     """
     Load a package given its description / name.
     """
-    pkgfile = pkgfile_for_package(package)
+    pkgfile = pkgfile_for_package(package, filemap)
     return yaml.load(open(pkgfile).read())
 
-def download_dependencies(package, method):
+def download_dependencies(package, method, filemap=None):
     """
     Download all dependencies for a given package.
 
     method is a function taking an url and a dest path and will be used for
     downloading the dependency.
+
+    filemap is a dictionnary mapping modules name to folders.
     """
     # Skip everything if we dont have deps
     if "depends" not in package:
@@ -96,25 +107,25 @@ def download_dependencies(package, method):
 
     for dep in package["depends"]:
         repo_url = url_for_package(dep)
-        repo_path = path_for_package(dep)
+        repo_path = path_for_package(dep, filemap)
 
         if not os.path.exists(repo_path):
             method(repo_url, repo_path)
 
         try:
-            dep = open_package(dep)
+            dep = open_package(dep, filemap)
         except IOError:
             continue
 
-        download_dependencies(dep, method=method)
+        download_dependencies(dep, method=method, filemap=filemap)
 
-def generate_source_list(package, category):
+def generate_source_list(package, category, filemap=None):
     """
     Recursively generates a list of all source files needed to build a package.
     The category parameter can be "source", "tests", etc.
     """
 
-    def generate_source_set(package, category, basedir):
+    def generate_source_set(package, category, filemap, basedir):
         if category in package:
             sources = set([os.path.join(basedir, i) for i in package[category]])
         else:
@@ -124,25 +135,25 @@ def generate_source_list(package, category):
             return sources
 
         for dep in package["depends"]:
-            pkg_dir = path_for_package(dep)
+            pkg_dir = path_for_package(dep, filemap)
 
             # Tries to open the dependency package.yml file.
             # If it doesn't exist, simply proceed to next dependency
             try:
-                dep = open_package(dep)
+                dep = open_package(dep, filemap)
             except IOError:
                 continue
 
-            dep_src = generate_source_set(dep, category, pkg_dir)
+            dep_src = generate_source_set(dep, category, filemap, pkg_dir)
             sources = sources.union(dep_src)
 
         return sources
 
-    source_list = list(generate_source_set(package, category, basedir='./'))
+    source_list = list(generate_source_set(package, category, filemap, basedir='./'))
 
     return sorted(source_list)
 
-def generate_source_dict(package):
+def generate_source_dict(package, filemap=None):
     """
     Generates a dictionary containing a list of files for each source category.
     The result can then be used for template rendering for example.
@@ -150,7 +161,7 @@ def generate_source_dict(package):
     result = dict()
 
     for cat in ["source", "tests", "include_directories"]:
-        result[cat] = generate_source_list(package, category=cat)
+        result[cat] = generate_source_list(package, category=cat, filemap=filemap)
 
     result["target"] = dict()
 
@@ -158,9 +169,25 @@ def generate_source_dict(package):
 
     for arch in targets:
         arch = arch.replace("target.", "")
-        result["target"][arch] = generate_source_list(package, category=arch)
+        result["target"][arch] = generate_source_list(package, category=arch, filemap=filemap)
 
     return result
+
+def create_dependency_location_map(filemap):
+    """
+    This function receives a dependency map in the following format:
+    {'control':['pid', 'odometry'], 'foo':['bar']} and converts it to the
+    following format : {'pid':'control', 'odometry':'control', 'bar':'foo'}. It
+    also sets a sensible default value.
+    """
+    locations = defaultdict(lambda: DEPENDENCIES_DIR)
+
+    for destination, packages in filemap.items():
+        for p in packages:
+            locations[p] = destination
+
+    return locations
+
 
 def create_jinja_env():
     """
@@ -208,12 +235,16 @@ def main():
 
     # fixme: this redefines the constant DEPENDENCIES_DIR if dependency-dir is set for the top-level package.yml
     if 'dependency-dir' in package:
-        global DEPENDENCIES_DIR
-        DEPENDENCIES_DIR = package['dependency-dir']
+        dep = package['dependency-dir']
+    else:
+        dep = DEPENDENCIES_DIR
 
-    download_dependencies(package, method=args.download_method)
-    context = generate_source_dict(package)
-    context['include_directories'].append(DEPENDENCIES_DIR)
+    filemap = defaultdict(lambda: dep)
+
+    download_dependencies(package, method=args.download_method, filemap=filemap)
+    context = generate_source_dict(package, filemap)
+
+    context['include_directories'].append(dep)
 
     if context["tests"]:
         render_template_to_file("CMakeLists.txt.jinja", "CMakeLists.txt", context)
