@@ -9,13 +9,13 @@ include_directories({{ dir }})
 
 add_executable(
     tests
-    {% for file in source %}
+    {% for file in source -%}
     {{ file }}
-    {% endfor %}
+    {% endfor -%}
 
-    {% for file in tests %}
+    {% for file in tests -%}
     {{ file }}
-    {% endfor %}
+    {% endfor -%}
     )
 
 
