@@ -92,6 +92,12 @@ class GenerateSourceListTestCase(unittest.TestCase):
         self.assertIn('x86', result['target'])
         self.assertIn('linux', result['target'])
 
+    def test_source_target_is_correct(self):
+        """
+        Checks that the target.* fields are correctly read (issue #12)
+        """
+        result = generate_source_dict({'target.x86':['main.c']})
+        self.assertEqual(['./main.c'], result['target']['x86'])
 
     def test_target_source_are_sorted(self):
         """

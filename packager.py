@@ -167,9 +167,9 @@ def generate_source_dict(package, filemap=None):
 
     targets = [key for key in package.keys() if key.startswith("target.")]
 
-    for arch in targets:
-        arch = arch.replace("target.", "")
-        result["target"][arch] = generate_source_list(package, category=arch, filemap=filemap)
+    for tar in targets:
+        arch = tar.replace("target.", "")
+        result["target"][arch] = generate_source_list(package, category=tar, filemap=filemap)
 
     return result
 
