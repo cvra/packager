@@ -1,3 +1,4 @@
+sudo: false # Enable faster builds (Docker based)
 language: python
 python:
     - "2.7"
