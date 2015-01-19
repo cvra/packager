@@ -7,6 +7,8 @@ set(CMAKE_BUILD_TYPE Debug)
 include_directories({{ dir }})
 {% endfor %}
 
+list( APPEND CMAKE_CXX_FLAGS "-std=c++0x")
+
 add_executable(
     tests
     {% for file in source -%}
