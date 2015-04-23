@@ -208,8 +208,9 @@ def render_template_to_file(template_name, dest_path, context):
     template = env.get_template(template_name)
     rendered = template.render(context)
 
-    with open(dest_path, "w") as output:
-        output.write(rendered)
+    if open(dest_path, "r").read() != rendered:
+        with open(dest_path, "w") as output:
+            output.write(rendered)
 
 def parse_args(args=None):
     """
