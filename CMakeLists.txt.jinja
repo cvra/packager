@@ -29,5 +29,8 @@ target_link_libraries(
     CppUTestExt
     )
 
+# Run unit tests
+add_custom_target(check ./tests -c DEPENDS tests)
+
 {% block additional_targets %}
 {% endblock %}

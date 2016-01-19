@@ -36,6 +36,7 @@ make
 
 Done! You should have a `tests` executable in your current folder that will
 print "Hello, World!" when launched.
+You can also run `make check` to build unit tests then run them.
 
 
 
