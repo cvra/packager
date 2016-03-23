@@ -1,5 +1,5 @@
 import unittest
-from packager import *
+from cvra_packager.packager import *
 
 try:
     from unittest.mock import *
@@ -23,7 +23,7 @@ class DependencyTestCase(unittest.TestCase):
         self.assertEqual([], self.clone.call_args_list)
 
     @patch('os.path.exists')
-    @patch('packager.open_package')
+    @patch('cvra_packager.packager.open_package')
     def test_dependency_already_there(self, open_package, exists):
         """
         Checks that if a package is already downloaded we don't download it
@@ -38,7 +38,7 @@ class DependencyTestCase(unittest.TestCase):
         self.assertEqual([], self.clone.call_args_list)
 
     @patch('os.path.exists')
-    @patch('packager.open_package')
+    @patch('cvra_packager.packager.open_package')
     def test_dependency_download_single_level(self, open_package, exists):
         """
         Checks that we correctly download a needed dependency.
@@ -52,7 +52,7 @@ class DependencyTestCase(unittest.TestCase):
         self.clone.assert_called_with('https://github.com/cvra/pid', 'dependencies/pid')
 
     @patch('os.path.exists')
-    @patch('packager.open_package')
+    @patch('cvra_packager.packager.open_package')
     def test_dependency_has_a_dependency_itself(self, open_package, exists):
         """
         Checks that if a dependency of the package has itself a dependency it
@@ -73,7 +73,7 @@ class DependencyTestCase(unittest.TestCase):
         self.clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
 
     @patch('os.path.exists')
-    @patch('packager.open_package')
+    @patch('cvra_packager.packager.open_package')
     def test_dependency_has_a_dependency_itself_filemap(self, open_package, exists):
         """
         Checks that dependencies of dependencies are downloaded in the correctplace too
@@ -95,7 +95,7 @@ class DependencyTestCase(unittest.TestCase):
         self.clone.assert_any_call('https://github.com/cvra/test-runner', 'foo/test-runner')
 
     @patch('os.path.exists')
-    @patch('packager.open_package')
+    @patch('cvra_packager.packager.open_package')
     def test_cannot_find_package_file_in_dependency(self, open_package, exists):
         """
         Checks that a package where we cannot find a package.yml is simply skipped.
@@ -113,7 +113,7 @@ class DependencyTestCase(unittest.TestCase):
 
 
     @patch('os.path.exists')
-    @patch('packager.open_package')
+    @patch('cvra_packager.packager.open_package')
     def test_multiple_dependencies(self, open_package, exists):
         """
         Checks that we correctly download a needed dependency.
@@ -128,7 +128,7 @@ class DependencyTestCase(unittest.TestCase):
         self.clone.assert_any_call('https://github.com/cvra/test-runner', 'dependencies/test-runner')
 
     @patch('os.path.exists')
-    @patch('packager.open_package')
+    @patch('cvra_packager.packager.open_package')
     def test_dependencies_filemap(self, open_package, exists):
         """
         Checks that we can correctly map the downloaded file to the correct

@@ -1,5 +1,5 @@
 import unittest
-from packager import *
+from cvra_packager.packager import *
 
 class RepoUrlTest(unittest.TestCase):
     def test_simple_repository(self):

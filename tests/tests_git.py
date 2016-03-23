@@ -1,5 +1,5 @@
 import unittest
-from packager import *
+from cvra_packager.packager import *
 
 try:
     from unittest.mock import *

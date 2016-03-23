@@ -1,5 +1,5 @@
 import unittest
-from packager import *
+from cvra_packager.packager import *
 
 try:
     from unittest.mock import *
@@ -27,14 +27,14 @@ class ArgumentParsingTestCase(unittest.TestCase):
 
 
 class IntegrationTesting(unittest.TestCase):
-    @patch('packager.render_template_to_file')
+    @patch('cvra_packager.packager.render_template_to_file')
     def test_all_templates_are_rendered(self, render_mock):
         """
         Tests that all templates specified in package.yml are rendered
         appropriately.
         """
 
-        from packager import main as packager_main
+        from cvra_packager.packager import main as packager_main
 
         pkgfile_content = '''
         templates:
@@ -42,7 +42,7 @@ class IntegrationTesting(unittest.TestCase):
             Test.jinja: Test
         '''
 
-        with patch('packager.open', mock_open(read_data=pkgfile_content), create=True):
+        with patch('cvra_packager.packager.open', mock_open(read_data=pkgfile_content), create=True):
             packager_main()
 
         empty_context = {'source': [],
@@ -54,20 +54,20 @@ class IntegrationTesting(unittest.TestCase):
         render_mock.assert_any_call('Makefile.jinja', 'Makefile', empty_context)
         render_mock.assert_any_call('Test.jinja', 'Test', empty_context)
 
-    @patch('packager.render_template_to_file')
+    @patch('cvra_packager.packager.render_template_to_file')
     def test_unit_tests_template(self, render_mock):
         """
         Tests that including tests in a package triggers the rendering of a
         CMakeLists.txt to build the unit tests.
         """
-        from packager import main as packager_main
+        from cvra_packager.packager import main as packager_main
 
         pkgfile_content = '''
         tests:
             - pid_test.cpp
         '''
 
-        with patch('packager.open', mock_open(read_data=pkgfile_content), create=True):
+        with patch('cvra_packager.packager.open', mock_open(read_data=pkgfile_content), create=True):
             packager_main()
 
         expected_context = {'source': [],
