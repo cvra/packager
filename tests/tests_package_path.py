@@ -1,5 +1,5 @@
 import unittest
-from packager import *
+from cvra_packager.packager import *
 
 class PackageNameTest(unittest.TestCase):
     def test_pkgname_trivial_case(self):

@@ -1,5 +1,5 @@
 import unittest
-from packager import *
+from cvra_packager.packager import *
 try:
     from unittest.mock import *
 except ImportError:
@@ -24,7 +24,7 @@ class GenerateSourceListTestCase(unittest.TestCase):
         result = generate_source_list(package, 'sources')
         self.assertEqual(['./pid.c'], result)
 
-    @patch('packager.open_package')
+    @patch('cvra_packager.packager.open_package')
     def test_source_in_filemap(self, open_package_mock):
         """
         Tests that we can create a package with dependencies in a specified folder.
@@ -42,7 +42,7 @@ class GenerateSourceListTestCase(unittest.TestCase):
         # Checks that the opened file is foo/pid/package.yml
         open_package_mock.assert_called_with('pid', filemap)
 
-    @patch('packager.open_package')
+    @patch('cvra_packager.packager.open_package')
     def test_source_package_dep(self, open_package_mock):
         """
         Tests that dependencies sources are included in the result.
@@ -57,7 +57,7 @@ class GenerateSourceListTestCase(unittest.TestCase):
 
         self.assertEqual(sorted(expected), sorted(result))
 
-    @patch('packager.open_package')
+    @patch('cvra_packager.packager.open_package')
     def test_skip_package_if_no_yml(self, open_package_mock):
         """
         Checks that a package file without any yml file is simply skipped.
@@ -116,7 +116,7 @@ class GenerateSourceListTestCase(unittest.TestCase):
         self.assertEqual(result, sorted(result))
 
 
-    @patch('packager.open_package')
+    @patch('cvra_packager.packager.open_package')
     def test_include_directory_dep(self, open_package_mock):
         """
         Tests that dependencies include directories are included in the result.

@@ -1,5 +1,5 @@
 import unittest
-from packager import *
+from cvra_packager.packager import *
 
 try:
     from unittest.mock import *
@@ -20,7 +20,7 @@ class OpenPackageTestCase(unittest.TestCase):
         Tests that loading a package given its simple description (name string)
         works as expected.
         """
-        with patch('packager.open', mock_open(read_data=self.package_content), create=True) as m:
+        with patch('cvra_packager.packager.open', mock_open(read_data=self.package_content), create=True) as m:
             package = open_package('pid')
             m.assert_called_with('dependencies/pid/package.yml')
 
@@ -32,7 +32,7 @@ class OpenPackageTestCase(unittest.TestCase):
         Checks that the filemap is respected.
         """
 
-        with patch('packager.open', mock_open(read_data=self.package_content), create=True) as m:
+        with patch('cvra_packager.packager.open', mock_open(read_data=self.package_content), create=True) as m:
             package = open_package('pid', {'pid':'foo'})
             m.assert_called_with('foo/pid/package.yml')
 
@@ -41,8 +41,8 @@ class OpenPackageTestCase(unittest.TestCase):
 
 class TemplateRenderingTestCase(unittest.TestCase):
 
-    @patch('packager.open', new_callable=mock_open, create=True)
-    @patch('packager.create_jinja_env')
+    @patch('cvra_packager.packager.open', new_callable=mock_open, create=True)
+    @patch('cvra_packager.packager.create_jinja_env')
     def test_can_render_template_correctly(self, create_env_mock, open_mock):
         """
         Checks that we can render template to files correctly.

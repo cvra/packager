@@ -9,7 +9,7 @@ find yourself doing the same steps: building and running a test after each file
 change. It is also editor-independent, which is great :)
 """
 
-import packager
+from cvra_packager import generate_source_dict
 import yaml
 import os.path
 from time import sleep
@@ -42,7 +42,7 @@ def run_tests(changed_path):
 
 def main():
     package = yaml.load(open("package.yml").read())
-    sources = packager.generate_source_dict(package)
+    sources = generate_source_dict(package)
 
     if len(sources['tests']) == 0:
         print('No unit tests ? Aborting !')
