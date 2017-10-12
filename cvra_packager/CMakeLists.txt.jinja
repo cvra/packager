@@ -21,6 +21,9 @@ add_executable(
     {% endfor -%}
     )
 
+{% for dir in include_directories.test -%}
+target_include_directories(tests PRIVATE {{ dir }})
+{%- endfor %}
 
 target_link_libraries(
     tests
