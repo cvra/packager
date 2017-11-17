@@ -1,5 +1,6 @@
 import unittest
 from cvra_packager.packager import *
+from os.path import join
 
 try:
     from unittest.mock import *
@@ -48,7 +49,7 @@ class IntegrationTesting(unittest.TestCase):
         empty_context = {'source': [],
                          'target': {},
                          'tests': [],
-                         'include_directories': ['dependencies/']
+                         'include_directories': ['dependencies']
                          }
 
         render_mock.assert_any_call('Makefile.jinja', 'Makefile', empty_context)
@@ -72,8 +73,8 @@ class IntegrationTesting(unittest.TestCase):
 
         expected_context = {'source': [],
                             'target': {},
-                            'tests': ['./pid_test.cpp'],
-                            'include_directories': ['dependencies/']
+                            'tests': [join('.','pid_test.cpp')],
+                            'include_directories': ['dependencies']
                             }
         render_mock.assert_any_call('CMakeLists.txt.jinja', 'CMakeLists.txt', expected_context)
 
