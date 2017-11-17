@@ -1,5 +1,7 @@
 import unittest
 from cvra_packager.packager import *
+from os.path import join
+
 try:
     from unittest.mock import *
 except ImportError:
@@ -37,7 +39,7 @@ class GenerateSourceListTestCase(unittest.TestCase):
 
         result = generate_source_list(package, 'sources', filemap=filemap)
 
-        self.assertEqual(['./application.c', 'foo/pid/pid.c'], result)
+        self.assertEqual(['./application.c', join('foo', 'pid', 'pid.c')], result)
 
         # Checks that the opened file is foo/pid/package.yml
         open_package_mock.assert_called_with('pid', filemap)
@@ -53,7 +55,7 @@ class GenerateSourceListTestCase(unittest.TestCase):
         open_package_mock.return_value = pid_package
 
         result = generate_source_list(package, 'sources')
-        expected = ['./application.c', 'dependencies/pid/pid.c']
+        expected = ['./application.c', join('dependencies', 'pid', 'pid.c')]
 
         self.assertEqual(sorted(expected), sorted(result))
 
