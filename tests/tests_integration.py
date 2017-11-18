@@ -38,6 +38,7 @@ class IntegrationTesting(unittest.TestCase):
         from cvra_packager.packager import main as packager_main
 
         pkgfile_content = '''
+        dependency-dir: src
         templates:
             Makefile.jinja: Makefile
             Test.jinja: Test
@@ -49,7 +50,7 @@ class IntegrationTesting(unittest.TestCase):
         empty_context = {'source': [],
                          'target': {},
                          'tests': [],
-                         'include_directories': ['dependencies']
+                         'include_directories': ['src']
                          }
 
         render_mock.assert_any_call('Makefile.jinja', 'Makefile', empty_context)
