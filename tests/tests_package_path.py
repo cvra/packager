@@ -1,5 +1,6 @@
 import unittest
 from cvra_packager.packager import *
+from os.path import join
 
 class PackageNameTest(unittest.TestCase):
     def test_pkgname_trivial_case(self):
@@ -14,9 +15,11 @@ class PackageNameTest(unittest.TestCase):
         self.assertEqual("pid", package_name_from_desc(package))
 
     def test_pkgfile_trivial_case(self):
-        """ Checks that we can correctly generate the package file path. """
+        """
+        Checks that we can correctly generate the package file path.
+        """
         package = "pid"
-        expected = "dependencies/pid/package.yml"
+        expected = join('dependencies', 'pid', 'package.yml')
         self.assertEqual(expected, pkgfile_for_package(package))
 
     def test_pkgfile_complex_case(self):
@@ -24,7 +27,7 @@ class PackageNameTest(unittest.TestCase):
         Checks that we can correctly find the package.yml file for complex packages.
         """
         package = {"pid":{"fork":"antoinealb"}}
-        expected = "dependencies/pid/package.yml"
+        expected = join('dependencies', 'pid', 'package.yml')
         self.assertEqual(expected, pkgfile_for_package(package))
 
     def test_path_for_package_simple_case(self):
@@ -32,7 +35,7 @@ class PackageNameTest(unittest.TestCase):
         Checks that we can find the path to a package directory (trivial case).
         """
         package = "pid"
-        expected = "dependencies/pid"
+        expected = join('dependencies', 'pid')
         self.assertEqual(expected, path_for_package(package))
 
     def test_path_for_package_complex_case(self):
@@ -46,6 +49,6 @@ class PackageNameTest(unittest.TestCase):
         """
         package = "pid"
         m = {"pid":"control"}
-        self.assertEqual("control/pid", path_for_package(package, m))
+        self.assertEqual(join('control', 'pid'), path_for_package(package, m))
 
 

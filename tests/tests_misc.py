@@ -1,5 +1,6 @@
 import unittest
 from cvra_packager.packager import *
+from os.path import join
 
 try:
     from unittest.mock import *
@@ -22,7 +23,7 @@ class OpenPackageTestCase(unittest.TestCase):
         """
         with patch('cvra_packager.packager.open', mock_open(read_data=self.package_content), create=True) as m:
             package = open_package('pid')
-            m.assert_called_with('dependencies/pid/package.yml')
+            m.assert_called_with(join('dependencies', 'pid', 'package.yml'))
 
         self.assertEqual(self.expected, package)
 
@@ -34,7 +35,7 @@ class OpenPackageTestCase(unittest.TestCase):
 
         with patch('cvra_packager.packager.open', mock_open(read_data=self.package_content), create=True) as m:
             package = open_package('pid', {'pid':'foo'})
-            m.assert_called_with('foo/pid/package.yml')
+            m.assert_called_with(join('foo', 'pid', 'package.yml'))
 
         expected = {"source":['pid.c', 'pidconfig.c']}
         self.assertEqual(self.expected, package)

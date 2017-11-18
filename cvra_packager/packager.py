@@ -8,7 +8,7 @@ from collections import defaultdict
 
 
 BUILD_DIR = "build/"
-DEPENDENCIES_DIR = "dependencies/"
+DEPENDENCIES_DIR = "dependencies"
 
 def url_for_package(package):
     """

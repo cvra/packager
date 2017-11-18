@@ -1,6 +1,8 @@
 import unittest
 from cvra_packager.packager import *
 
+from os.path import join
+
 try:
     from unittest.mock import *
 except ImportError:
@@ -91,7 +93,7 @@ class DependencyTestCase(unittest.TestCase):
 
         download_dependencies(package, method=self.clone, filemap=filemap)
 
-        self.clone.assert_any_call('https://github.com/cvra/pid', 'foo/pid')
+        self.clone.assert_any_call('https://github.com/cvra/pid', join('foo', 'pid'))
         self.clone.assert_any_call('https://github.com/cvra/test-runner', 'foo/test-runner')
 
     @patch('os.path.exists')
@@ -142,7 +144,7 @@ class DependencyTestCase(unittest.TestCase):
 
         download_dependencies(package, method=self.clone, filemap=m)
 
-        self.clone.assert_any_call('https://github.com/cvra/pid', 'foo/pid')
+        self.clone.assert_any_call('https://github.com/cvra/pid', join('foo', 'pid'))
 
 
 
