@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='cvra-packager',
-    version='1.0.0',
+    version='1.1.0',
     description='CVRA packaging system',
     author='Club Vaudois de Robotique Autonome',
     author_email='info@cvra.ch',
