@@ -153,6 +153,11 @@ def generate_source_list(package, category, filemap=None):
 
     return sorted(source_list)
 
+# Just needed to have a Python implementation of list because lists are not
+# dynamic enough in CPython
+class ListWrapper(list):
+    pass
+
 def generate_source_dict(package, filemap=None):
     """
     Generates a dictionary containing a list of files for each source category.
@@ -161,10 +166,14 @@ def generate_source_dict(package, filemap=None):
     result = dict()
 
     for cat in ["source", "tests", "include_directories"]:
-        result[cat] = generate_source_list(package, category=cat, filemap=filemap)
+        result[cat] = ListWrapper(generate_source_list(package, category=cat, filemap=filemap))
 
-    result["target"] = dict()
+    # Append test directories
+    test_inc = generate_source_list(package, category="include_directories.test",
+                                    filemap=filemap)
+    setattr(result["include_directories"], "test", test_inc)
 
+    result['target'] = dict()
     targets = [key for key in package.keys() if key.startswith("target.")]
 
     for tar in targets:

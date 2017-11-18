@@ -130,4 +130,16 @@ class GenerateSourceListTestCase(unittest.TestCase):
 
         self.assertEqual(result, expected)
 
+    @patch('cvra_packager.packager.open_package')
+    def test_include_directory_for_tests(self, open_package_mock):
+        """
+        Tests that the include directories for tests are included as well.
+        """
+        package = {'sources':['application.c'],'depends':['pid']}
+        pid_package = {'sources':['pid.c'], 'include_directories.test':['poney']}
+        open_package_mock.return_value = pid_package
 
+        result = generate_source_dict(package)
+        expected = [os.path.join(DEPENDENCIES_DIR, 'pid', 'poney')]
+
+        self.assertEqual(result['include_directories'].test, expected)
