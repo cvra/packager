@@ -5,6 +5,10 @@ import subprocess
 import jinja2
 import argparse
 from collections import defaultdict
+import sys
+
+if sys.version_info.major != 3 or sys.version_info.minor <= 4:
+    raise RuntimeError("packager requires Python 3.4 or greater")
 
 
 BUILD_DIR = "build/"
