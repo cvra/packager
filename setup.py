@@ -1,12 +1,12 @@
 import sys
 from setuptools import setup
 
-if sys.version_info.major != 3 or sys.version_info.minor <= 4:
+if sys.version_info.major != 3 or sys.version_info.minor < 4:
     raise RuntimeError("packager requires Python 3.4 or greater")
 
 setup(
     name='cvra-packager',
-    version='1.1.2',
+    version='1.1.3',
     description='CVRA packaging system',
     author='Club Vaudois de Robotique Autonome',
     author_email='info@cvra.ch',
