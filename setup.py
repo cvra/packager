@@ -6,7 +6,7 @@ if sys.version_info.major != 3 or sys.version_info.minor < 4:
 
 setup(
     name='cvra-packager',
-    version='1.1.3',
+    version='1.2.0',
     description='CVRA packaging system',
     author='Club Vaudois de Robotique Autonome',
     author_email='info@cvra.ch',
