@@ -24,8 +24,8 @@ setup(
         'Programming Language :: Python :: 3.6',
         ],
     install_requires=[
-        'pyyaml',
-        'jinja2',
+        'pyyaml~=5.1.2',
+        'jinja2~=2.10.1',
         ],
     package_data = {
         '': ['*.jinja'],

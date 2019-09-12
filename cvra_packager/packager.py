@@ -94,7 +94,7 @@ def open_package(package, filemap=None):
     Load a package given its description / name.
     """
     pkgfile = pkgfile_for_package(package, filemap)
-    return yaml.load(open(pkgfile).read())
+    return yaml.load(open(pkgfile).read(), Loader=yaml.SafeLoader)
 
 def download_dependencies(package, method, filemap=None):
     """
@@ -248,7 +248,7 @@ def main():
     args = parse_args()
 
     try:
-        package = yaml.load(open("package.yml").read())
+        package = yaml.load(open("package.yml").read(), Loader=yaml.SafeLoader)
     except FileNotFoundError:
         print('package.yml was not found. Did you forget to git add it ?')
         return
