@@ -266,7 +266,9 @@ def main():
 
     context['include_directories'].append(dep)
 
-    if context["tests"]:
+    render_cmakelists_for_tests = package.get("render_cmakelists_for_tests", True)
+
+    if context["tests"] and render_cmakelists_for_tests:
         render_template_to_file("CMakeLists.txt.jinja", "CMakeLists.txt", context)
 
     if "templates" in package:

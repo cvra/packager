@@ -79,6 +79,29 @@ class IntegrationTesting(unittest.TestCase):
                             }
         render_mock.assert_any_call('CMakeLists.txt.jinja', 'CMakeLists.txt', expected_context)
 
+    @patch('cvra_packager.packager.render_template_to_file')
+    def test_unit_tests_cmake_can_be_disabled(self, render_mock):
+        """
+        Tests that some top level package.yml can disable rendering of
+        CMakeLists.txt. This is useful as we slowly migrate boards to
+        CMake-based builds and we do not want to overwrite manually-written
+        CMakeLists.txt.
+        """
+        from cvra_packager.packager import main as packager_main
+
+        pkgfile_content = '''
+        tests:
+            - pid_test.cpp
+
+        render_cmakelists_for_tests: False
+        '''
+
+        with patch('cvra_packager.packager.open', mock_open(read_data=pkgfile_content), create=True):
+            packager_main()
+
+        render_mock.assert_not_called()
+
+
     def test_can_find_template(self):
         """
         Checks that we can find template using create_jinja_env.
