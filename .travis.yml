@@ -6,7 +6,7 @@ python:
     - "3.6"
 
 install:
-    - python setup.py install
+    - python3 setup.py install
 
 script:
-    - python -m unittest
+    - python3 -m unittest
