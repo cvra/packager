@@ -1,12 +1,10 @@
 sudo: false # Enable faster builds (Docker based)
 language: python
 python:
-    - "3.4"
-    - "3.5"
     - "3.6"
 
 install:
-    - python setup.py install
+    - python3 setup.py install
 
 script:
-    - python -m unittest
+    - python3 -m unittest
